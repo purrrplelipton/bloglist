@@ -1,0 +1,41 @@
+{
+  "name": "bloglist_backend",
+  "version": "1.0.0",
+  "description": "follow up on the fullstack open blog list exercise",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/purrrplelipton/blogList_backend.git"
+  },
+  "keywords": [
+    "blog",
+    "list",
+    "blog list",
+    "blog application",
+    "list application",
+    "blog list application",
+    "fullstack open",
+    "fullstack open blog list"
+  ],
+  "author": "immanuel toby",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/purrrplelipton/blogList_backend/issues"
+  },
+  "homepage": "https://github.com/purrrplelipton/blogList_backend#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.22.0",
+    "nodemon": "^2.0.19"
+  }
+}
