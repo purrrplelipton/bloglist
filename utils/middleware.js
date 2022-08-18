@@ -19,6 +19,8 @@ function errorHandler(err, req, res, nxt) {
     return res.status(400).send({ error: "malformatted id" });
   } else if (err.name === "ValidationError") {
     return res.status(400).json({ error: err.message });
+  } else if (err.name === "MongoServerError" && err.code === 11000) {
+    return res.status(400).json({ error: Object.entries(err.keyValue) });
   }
 
   nxt(err);
