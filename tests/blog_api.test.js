@@ -10,4 +10,4 @@ test("should return blogs as JSON", async () => {
     .expect("Content-Type", /application\/json/);
 }, 10000);
 
-afterAll(() => mongoose.connect.close());
+afterAll(() => mongoose.connection.close());
