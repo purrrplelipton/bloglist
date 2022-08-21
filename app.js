@@ -9,7 +9,6 @@ const express = require("express");
 const app = express();
 
 const cors = require("cors");
-const bodyParser = require("body-parser");
 const blogsRouter = require("./controllers/blog");
 const { info, error } = require("./utils/logger");
 const mongoose = require("mongoose");
@@ -23,8 +22,7 @@ mongoose
 
 app.use(cors());
 app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(requestLogger);
 
 app.use("/api/blogs", blogsRouter);

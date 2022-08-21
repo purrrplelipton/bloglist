@@ -79,4 +79,12 @@ function mostBlogs(blogs) {
   return blogInfo;
 }
 
-module.exports = { blogList, totalLikes, favoriteBlog, mostBlogs };
+function mostLikes() {}
+
+module.exports = {
+  blogList,
+  totalLikes,
+  favoriteBlog,
+  mostBlogs,
+  mostLikes,
+};

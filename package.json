@@ -4,9 +4,10 @@
   "description": "follow up on the fullstack open blog list exercise",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "jest --verbose",
+    "start": "cross-env NODE_ENV=production node index.js",
+    "dev": "cross-env NODE_ENV=development nodemon index.js",
+    "test": "cross-env NODE_ENV=test jest --verbose --runInBand --forceExit",
+    "build:ui": "rm -rf build && cd ../blogList_frontend && npm run build:ui",
     "lint": "eslint ."
   },
   "repository": {
@@ -30,8 +31,8 @@
   },
   "homepage": "https://github.com/purrrplelipton/blogList_backend#readme",
   "dependencies": {
-    "body-parser": "^1.20.0",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "loadash": "^1.0.0"
@@ -39,6 +40,7 @@
   "devDependencies": {
     "eslint": "^8.22.0",
     "jest": "^28.1.3",
-    "nodemon": "^2.0.19"
+    "nodemon": "^2.0.19",
+    "supertest": "^6.2.4"
   }
 }
