@@ -1,4 +1,6 @@
 /* eslint-disable indent */
+const Blog = require("../models/blog");
+
 const blogList = [
   {
     _id: "5a422a851b54a676234d17f7",
@@ -57,7 +59,7 @@ function totalLikes(blogs) {
 
 function favoriteBlog(blogs) {
   const likesArr = blogs.map((blog) => blog.likes);
-  const mostLikes = likesArr.sort((a, b) => (b < a ? -1 : b > a ? 1 : 0))[0];
+  const mostLikes = likesArr.sort((a, b) => b - a)[0];
   const favoriteBlog = blogs.find((blog) => blog.likes === mostLikes);
   return {
     title: favoriteBlog.title,
@@ -81,10 +83,24 @@ function mostBlogs(blogs) {
 
 function mostLikes() {}
 
+async function nonExistingId() {
+  const blog = new Blog({ title: "", author: "", url: "" });
+  blog.save();
+  blog.remove();
+
+  return blog._id.toString();
+}
+async function blogsInDb() {
+  const blogs = await Blog.find({});
+  return blogs.map((blog) => blog.toJSON());
+}
+
 module.exports = {
   blogList,
   totalLikes,
   favoriteBlog,
   mostBlogs,
   mostLikes,
+  nonExistingId,
+  blogsInDb,
 };

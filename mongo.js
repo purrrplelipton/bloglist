@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const password = process.argv[2];
 
-const URI = `mongodb+srv://immanuel:${password}@cluster0.hkqnumt.mongodb.net/?retryWrites=true&w=majority`;
+const URI = `mongodb+srv://fs-open_stuffs:${password}@fs-open.wnxlzmd.mongodb.net/blog-list_test-db?retryWrites=true&w=majority`;
 
 mongoose.connect(URI);
 
