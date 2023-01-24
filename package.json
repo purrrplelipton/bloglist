@@ -9,10 +9,10 @@
     "test": "NODE_ENV=test jest --verbose --runInBand --forceExit",
     "build:ui": "rm -rf dist && cd ../frontend && npm run build:ui",
     "lint": "npx eslint .",
-    "lint:fix": "npm run lint -- --fix",
+    "lint:fix": "yarn lint -- --fix",
     "prettier": "npx prettier . --check",
-    "prettier:fix": "npm run prettier -- --write",
-    "format": "npm run prettier:fix && npm run lint:fix"
+    "prettier:fix": "yarn prettier -- --write",
+    "format": "yarn prettier:fix && yarn lint:fix"
   },
   "repository": {
     "type": "git",
