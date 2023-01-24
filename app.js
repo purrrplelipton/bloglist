@@ -14,6 +14,7 @@ const { info, error } = require("./utils/logger");
 const mongoose = require("mongoose");
 
 info("connecting to MongoDB...");
+
 mongoose
   .set("strictQuery", false)
   .connect(config.URI)
