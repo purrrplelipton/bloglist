@@ -7,12 +7,12 @@
     "start": "NODE_ENV=production node index.js",
     "dev": "NODE_ENV=development nodemon index.js",
     "test": "NODE_ENV=test jest --verbose --runInBand --forceExit",
-    "build:ui": "rm -rf dist && cd ../frontend && yarn build:ui",
+    "build:ui": "rm -rf dist && cd ../frontend && npm run build:ui",
     "lint": "npx eslint .",
-    "lint:fix": "yarn lint -- --fix",
+    "lint:fix": "npm run lint -- --fix",
     "prettier": "npx prettier . --check",
-    "prettier:fix": "yarn prettier -- --write",
-    "format": "yarn prettier:fix && yarn lint:fix"
+    "prettier:fix": "npm run prettier -- --write",
+    "format": "npm run prettier:fix && npm run lint:fix"
   },
   "repository": {
     "type": "git",
@@ -35,6 +35,7 @@
   },
   "homepage": "https://github.com/purrrplelipton/blogList_backend#readme",
   "dependencies": {
+    "chalk": "^5.2.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
