@@ -1,6 +1,6 @@
-const Blog = require("../models/blog");
+import Blog, { find } from "../models/blog";
 
-const blogList = [
+export const blogList = [
   {
     _id: "5a422a851b54a676234d17f7",
     title: "React patterns",
@@ -51,7 +51,7 @@ const blogList = [
   },
 ];
 
-async function nonExistingId() {
+export async function nonExistingId() {
   const blog = new Blog({ title: "title", author: "author", url: "url" });
   blog.save();
   blog.remove();
@@ -59,13 +59,7 @@ async function nonExistingId() {
   return blog._id.toString();
 }
 
-async function blogsInDb() {
-  const blogs = await Blog.find({});
+export async function blogsInDb() {
+  const blogs = await find({});
   return blogs.map((blog) => blog.toJSON());
 }
-
-module.exports = {
-  blogList,
-  nonExistingId,
-  blogsInDb,
-};

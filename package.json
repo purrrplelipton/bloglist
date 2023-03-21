@@ -2,54 +2,44 @@
   "name": "bloglist_backend",
   "version": "1.0.0",
   "description": "follow up on the fullstack open blog list exercise",
-  "main": "index.js",
+  "main": "./src/index.js",
   "scripts": {
     "start": "NODE_ENV=production node index.js",
     "dev": "NODE_ENV=development nodemon index.js",
     "test": "NODE_ENV=test jest --verbose --runInBand --forceExit",
     "build:ui": "rm -rf dist && cd ../frontend && npm run build:ui",
-    "lint": "npx eslint .",
-    "lint:fix": "npm run lint -- --fix",
-    "prettier": "npx prettier . --check",
-    "prettier:fix": "npm run prettier -- --write",
-    "format": "npm run prettier:fix && npm run lint:fix"
+    "lint": "eslint \"src/**/*.js\"",
+    "lint:fix": "eslint \"src/**/*.js\" --fix",
+    "format": "prettier \"src/**/*.js\"",
+    "format:fix": "prettier \"src/**/*.js\" --write"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/purrrplelipton/blogList_backend.git"
-  },
-  "keywords": [
-    "blog",
-    "list",
-    "blog list",
-    "blog application",
-    "list application",
-    "blog list application",
-    "fullstack open",
-    "fullstack open blog list"
-  ],
   "author": "immanuel toby",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/purrrplelipton/blogList_backend/issues"
-  },
-  "homepage": "https://github.com/purrrplelipton/blogList_backend#readme",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
-    "express-async-errors": "^3.1.1",
     "mongoose": "^6.5.4"
   },
   "devDependencies": {
-    "eslint": "^8.22.0",
-    "eslint-config-prettier": "^8.5.0",
-    "jest": "^28.1.3",
-    "nodemon": "^2.0.19",
-    "prettier": "^2.7.1",
     "supertest": "^6.2.4"
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "jest-environment-node",
+    "testTimeout": 9999
+  },
+  "eslintConfig": {
+    "ignorePatterns": [
+      "node_modules/",
+      "dist/",
+      "_*/"
+    ]
+  },
+  "prettier": {
+    "ignore": [
+      "node_modules/",
+      "dist/",
+      "_*/"
+    ]
   }
 }

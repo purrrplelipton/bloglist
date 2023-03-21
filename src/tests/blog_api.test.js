@@ -1,14 +1,14 @@
-const mongoose = require("mongoose");
-const supertest = require("supertest");
-const app = require("../app");
+import { connection } from "mongoose";
+import supertest from "supertest";
+import app from "../app";
+import Blog, { deleteMany, find } from "../models/blog";
+import { blogList, blogsInDb } from "../utils/test_helper";
 const api = supertest(app);
-const Blog = require("../models/blog");
-const helper = require("../utils/test_helper");
 
 beforeEach(async () => {
-  await Blog.deleteMany({});
+  await deleteMany({});
 
-  const blogObjects = helper.blogList.map((blog) => new Blog(blog));
+  const blogObjects = blogList.map((blog) => new Blog(blog));
   const promiseArray = blogObjects.map((blog) => blog.save());
   await Promise.all(promiseArray);
 }, 9999);
@@ -22,18 +22,18 @@ describe("get blogs info", () => {
   });
 
   test("all blogs are returned", async () => {
-    const res = await helper.blogsInDb();
-    expect(res).toHaveLength(helper.blogList.length);
+    const res = await blogsInDb();
+    expect(res).toHaveLength(blogList.length);
   });
 
   test("confirm presence of a blog", async () => {
-    const res = await helper.blogsInDb();
+    const res = await blogsInDb();
     const titles = res.map((r) => r.title);
     expect(titles).toContain("First class tests");
   });
 
   test("all blogs should have the _id unique identifier", async () => {
-    const blogs = await Blog.find({});
+    const blogs = await find({});
 
     function urng(r = blogs.length) {
       const max = Math.floor(2 ** 32 / r) * r;
@@ -62,8 +62,8 @@ describe("blog addition", () => {
       .expect(201)
       .expect("Content-Type", /application\/json/);
 
-    const endingBlogs = await helper.blogsInDb();
-    expect(endingBlogs).toHaveLength(helper.blogList.length + 1);
+    const endingBlogs = await blogsInDb();
+    expect(endingBlogs).toHaveLength(blogList.length + 1);
 
     const titles = endingBlogs.map((b) => b.title);
     expect(titles).toContain(newBlog.title);
@@ -74,8 +74,8 @@ describe("blog addition", () => {
 
     await api.post("/api/blogs").send(newBlog).expect(400);
 
-    const endingBlogs = await helper.blogsInDb();
-    expect(endingBlogs).toHaveLength(helper.blogList.length);
+    const endingBlogs = await blogsInDb();
+    expect(endingBlogs).toHaveLength(blogList.length);
   });
 
   test("with missing likes count defaults to 0", async () => {
@@ -91,14 +91,14 @@ describe("blog addition", () => {
       .expect(201)
       .expect("Content-Type", /application\/json/);
 
-    const x = await helper.blogsInDb();
-    const y = x.find((x) => x.title === "why pantheon is a chad champ");
+    const x = await blogsInDb();
+    const y = x.find((x) => x.title == "why pantheon is a chad champ");
     expect(y.likes).toBe(0);
   });
 });
 
 test("updating blog likes", async () => {
-  const blogs = await helper.blogsInDb();
+  const blogs = await blogsInDb();
   const rngBlog = blogs[blogs.length - 1];
 
   await api
@@ -107,13 +107,13 @@ test("updating blog likes", async () => {
     .expect(200)
     .expect("Content-Type", /application\/json/);
 
-  const endingBlogs = await helper.blogsInDb();
+  const endingBlogs = await blogsInDb();
   const updatedBlog = endingBlogs.find((blog) => blog.title === "Type wars");
   expect(updatedBlog.likes).toBe(3);
 });
 
 test("a specific blog can be viewed", async () => {
-  const startingBlogs = await helper.blogsInDb();
+  const startingBlogs = await blogsInDb();
   const blogToView = startingBlogs[3];
 
   const resultBlog = await api
@@ -127,17 +127,17 @@ test("a specific blog can be viewed", async () => {
 
 describe("blog deletion", () => {
   test("succeeds with status code 204 if id is valid", async () => {
-    const startingBlogs = await helper.blogsInDb();
+    const startingBlogs = await blogsInDb();
     const blogToDelete = startingBlogs[0];
 
     await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
 
-    const endingBlogs = await helper.blogsInDb();
-    expect(endingBlogs.length).toEqual(helper.blogList.length - 1);
+    const endingBlogs = await blogsInDb();
+    expect(endingBlogs.length).toEqual(blogList.length - 1);
 
     const titles = endingBlogs.map((blog) => blog.title);
     expect(titles).not.toContain(blogToDelete.title);
   });
 });
 
-afterAll(() => mongoose.connection.close());
+afterAll(() => connection.close());
