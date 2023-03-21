@@ -1,4 +1,4 @@
-const config = require("./utils/config");
+const { URI } = require("./utils/config");
 const {
   requestLogger,
   unknownEndpoint,
@@ -9,7 +9,7 @@ const express = require("express");
 const app = express();
 
 const cors = require("cors");
-const blogsRouter = require("./controllers/blog");
+const BlogsRouter = require("./controllers/routes");
 const { info, error } = require("./utils/logger");
 const mongoose = require("mongoose");
 
@@ -17,9 +17,9 @@ info("connecting to MongoDB...");
 
 mongoose
   .set("strictQuery", false)
-  .connect(config.URI)
-  .then(() => info("connected to MongoDB"))
-  .catch((err) => error("failed to connect to MongoDB", err.message));
+  .connect(URI)
+  .then(() => info("connected to MongoDB."))
+  .catch((err) => error("failed to connect to MongoDB.", err.message));
 
 app.use(cors());
 app.use(express.json());
@@ -27,7 +27,7 @@ app.use(express.static("dist"));
 app.use(express.urlencoded({ extended: false }));
 app.use(requestLogger);
 
-app.use("/api/blogs", blogsRouter);
+app.use("/api/blogs", BlogsRouter);
 
 app.use(unknownEndpoint);
 app.use(errorHandler);

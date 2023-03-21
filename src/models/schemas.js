@@ -3,16 +3,16 @@ const mongoose = require("mongoose");
 const blogSchema = new mongoose.Schema({
   title: { type: String, unique: true, required: true },
   author: { type: String, required: true },
-  url: { type: String, unique: true, required: false },
-  likes: { type: Number },
+  url: { type: String, unique: true, required: true },
+  likes: Number
 });
 
 blogSchema.set("toJSON", {
-  transform: (doc, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString();
-    delete returnedObject._id;
-    delete returnedObject.__v;
-  },
+  transform: (_doc, ret) => {
+    ret.id = ret._id.toString();
+    delete ret._id;
+    delete ret.__v;
+  }
 });
 
 module.exports = mongoose.model("Blog", blogSchema);
