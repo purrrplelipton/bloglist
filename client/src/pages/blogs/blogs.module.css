@@ -1,0 +1,7 @@
+.blogs {
+  margin-top: 82px;
+  padding: 12px;
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 12px;
+}
