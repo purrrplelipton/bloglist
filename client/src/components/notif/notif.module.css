@@ -1,0 +1,53 @@
+.notifs-container {
+  position: fixed;
+  right: 0;
+  bottom: 8px;
+  left: 0;
+  margin: 0 auto;
+}
+
+.notif {
+  max-width: 320px;
+  max-height: 200px;
+  position: relative;
+  z-index: 99;
+}
+
+.notif:not(:last-child) {
+  margin-bottom: 8px;
+}
+
+.notif.secondary {
+  background-color: #673ab7;
+}
+
+.notif.info {
+  background-color: #2196f3;
+}
+
+.notif.success {
+  background-color: #4caf50;
+}
+
+.notif.warning {
+  background-color: #ff9800;
+}
+
+.notif.error {
+  background-color: #f44336;
+}
+
+.dismiss-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  padding: 0;
+  border: none;
+}
+
+.notif,
+.dismiss-btn {
+  color: #fff;
+}

@@ -3,6 +3,7 @@ import { getBlogs } from "@services/blog.js";
 import React, { useEffect, useState } from "react";
 import styles from "./blogs.module.css";
 import { Bottom } from "./bottom";
+// import {Notification} from "@components/notify";
 import { Top } from "./top";
 
 const Blogs = () => {

@@ -14,7 +14,7 @@ const BlogSchema = new Schema(
     },
     thumbnail: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
     },
     author: {
