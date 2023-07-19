@@ -20,7 +20,6 @@ export async function addBlog(blog) {
     const { token } = JSON.parse(bloglist);
     const { data } = await api.post("/", blog, {
       headers: {
-        "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
       },
     });

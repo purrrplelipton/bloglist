@@ -2,13 +2,16 @@ import { Photo } from "@assets/vectors/tabler-icons";
 import { Input } from "@components/input";
 import { Modal } from "@components/modal";
 import { Spinner } from "@components/spinner";
+import { AppContext } from "@contexts/";
 import { addBlog } from "@services/blog.js";
 import DOMPurify from "dompurify";
 import PropTypes from "prop-types";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import styles from "./add-blog.module.css";
 
 const AddBlog = ({ isOpen, setIsOpen }) => {
+  const { dispatch } = useContext(AppContext);
   const [blog, setBlog] = useState({ title: "", content: "", thumbnail: null });
   const [uploading, setUploading] = useState(false);
 
@@ -19,8 +22,19 @@ const AddBlog = ({ isOpen, setIsOpen }) => {
     try {
       await addBlog(blog);
       setBlog((prv) => ({ ...prv, title: "", content: "", thumbnail: null }));
+      dispatch((prv) => ({
+        ...prv,
+        notifs: prv.notifs.concat({
+          message: "Blog Uploaded",
+          color: "success",
+          id: uuidv4(),
+        }),
+      }));
     } catch ({ message }) {
-      console.error(message);
+      dispatch((prv) => ({
+        ...prv,
+        notifs: prv.notifs.concat({ message, color: "error", id: uuidv4() }),
+      }));
     }
 
     setUploading(false);
@@ -42,6 +56,7 @@ const AddBlog = ({ isOpen, setIsOpen }) => {
         <form
           action="/upload-blog"
           method="POST"
+          encType="multipart/form-data"
           onSubmit={uploadBlog}
           className={styles.createForm}
         >
@@ -49,12 +64,7 @@ const AddBlog = ({ isOpen, setIsOpen }) => {
             <Input
               label="Title"
               placeholder="title"
-              onInput={(value) =>
-                setBlog((prv) => ({
-                  ...prv,
-                  title: DOMPurify.sanitize(value),
-                }))
-              }
+              onInput={(value) => setBlog((prv) => ({ ...prv, title: value }))}
               value={DOMPurify.sanitize(blog.title)}
             />
           </div>
@@ -65,10 +75,7 @@ const AddBlog = ({ isOpen, setIsOpen }) => {
               label="Content"
               placeholder="content"
               onInput={(value) =>
-                setBlog((prv) => ({
-                  ...prv,
-                  content: DOMPurify.sanitize(value),
-                }))
+                setBlog((prv) => ({ ...prv, content: value }))
               }
               value={DOMPurify.sanitize(blog.content)}
             />
@@ -95,9 +102,7 @@ const AddBlog = ({ isOpen, setIsOpen }) => {
           </div>
           <button
             type="submit"
-            disabled={
-              !Object.values(blog).every((val) => Boolean(val)) || uploading
-            }
+            disabled={!(blog.title.trim() && blog.content.trim()) || uploading}
             aria-label="upload blog"
           >
             {uploading ? <Spinner width={18} /> : "upload"}

@@ -6,18 +6,23 @@ import {
   SquareCheck,
 } from "@assets/vectors/tabler-icons";
 import { Spinner } from "@components/spinner";
+import { AppContext } from "@contexts/";
 import { signIn } from "@services/auth.js";
-import { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 import styles from "./sign-in.module.css";
+
+const initialUser = {
+  email$alias: "",
+  password: "",
+  rememberMe: false,
+};
 
 const SignIn = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState({
-    email$alias: "",
-    password: "",
-    rememberMe: false,
-  });
+  const { dispatch } = useContext(AppContext);
+  const [user, setUser] = useState(initialUser);
   const [formStates, setFormStates] = useState({ verifying: false });
   const [showPassword, setShowPassword] = useState(false);
 
@@ -28,15 +33,13 @@ const SignIn = () => {
     try {
       const data = await signIn(user);
       localStorage.setItem("bloglist", JSON.stringify(data));
-      setUser((prv) => ({
-        ...prv,
-        email$alias: "",
-        password: "",
-        rememberMe: false,
-      }));
+      setUser(initialUser);
       navigate("/");
     } catch ({ message }) {
-      console.error(message);
+      dispatch((prv) => ({
+        ...prv,
+        notifs: prv.notifs.concat({ message, color: "error", id: uuidv4() }),
+      }));
     }
 
     setFormStates((prv) => ({ ...prv, verifying: false }));

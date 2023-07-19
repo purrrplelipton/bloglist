@@ -14,10 +14,11 @@
     "client:dev": "cd client && yarn dev",
     "server": "cd server && yarn start",
     "client": "cd client && yarn start",
-    "build": "cd client && yarn build && mv dist ../server"
+    "build": "cd client && yarn build && cd ../server && rimraf dist && cd ../client && mv dist ../server"
   },
   "dependencies": {
-    "concurrently": "^8.2.0"
+    "concurrently": "^8.2.0",
+    "rimraf": "^5.0.1"
   },
   "license": "MIT"
 }

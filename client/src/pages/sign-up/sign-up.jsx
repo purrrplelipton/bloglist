@@ -1,16 +1,21 @@
 import { Eye, EyeOff, Square, SquareCheck } from "@assets/vectors/tabler-icons";
 import { Spinner } from "@components/spinner";
+import { AppContext } from "@contexts/";
 import { createUser } from "@services/user.js";
-import { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 import styles from "./sign-up.module.css";
 
+const initialUser = {
+  name: { first: "", last: "" },
+  email: "",
+  password: "",
+};
+
 const SignUp = () => {
-  const [user, setUser] = useState({
-    name: { first: "", last: "" },
-    email: "",
-    password: "",
-  });
+  const { dispatch } = useContext(AppContext);
+  const [user, setUser] = useState(initialUser);
 
   const [formStates, setFormStates] = useState({
     showPassword: false,
@@ -24,14 +29,12 @@ const SignUp = () => {
 
     try {
       await createUser(user);
-      setUser((prv) => ({
-        ...prv,
-        name: { ...prv.name, first: "", last: "" },
-        email: "",
-        password: "",
-      }));
+      setUser(initialUser);
     } catch ({ message }) {
-      console.error(message);
+      dispatch((prv) => ({
+        ...prv,
+        notifs: prv.notifs.concat({ message, color: "error", id: uuidv4() }),
+      }));
     }
 
     setFormStates((prv) => ({ ...prv, creating: false }));

@@ -1,15 +1,14 @@
 import PropTypes from "prop-types";
 import React, { createContext, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 
 const initialState = {
-  notifs: [{ message: "you have been warned.", color: "error", id: uuidv4() }],
+  notifs: [],
 };
 
 export const AppContext = createContext(initialState);
 
 export const AppProvider = ({ children }) => {
-  const [state, dispatch] = useState(AppContext);
+  const [state, dispatch] = useState(initialState);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>

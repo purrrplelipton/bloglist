@@ -1,20 +1,57 @@
 .notifs-container {
   position: fixed;
   right: 0;
-  bottom: 8px;
+  bottom: 1rem;
   left: 0;
-  margin: 0 auto;
+}
+
+.container {
+  overflow: hidden;
+  max-height: 200px;
+  transition: max-height 0.5s;
+}
+
+.container:not(:last-child) {
+  margin-bottom: 8px;
+}
+
+.container.shrink {
+  max-height: 0;
 }
 
 .notif {
   max-width: 320px;
   max-height: 200px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  overflow: hidden;
   position: relative;
   z-index: 99;
+  right: 0;
+  left: 0;
+  margin: 0 auto;
+  transition: transform 0.5s;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
 }
 
-.notif:not(:last-child) {
-  margin-bottom: 8px;
+@keyframes Td6f9AbC {
+  from {
+    transform: translateY(calc(100% + 1rem));
+  }
+  to {
+    transform: translateY(0%);
+  }
+}
+
+.notif.roll-up {
+  animation: Td6f9AbC 0.5s;
+}
+
+.notif.roll-out {
+  transform: translateY(calc(100% + 1rem));
+  flex: 0;
 }
 
 .notif.secondary {
@@ -42,9 +79,18 @@
   top: 0;
   right: 0;
   bottom: 0;
-  background: transparent;
-  padding: 0;
-  border: none;
+  background-color: hsla(0, 0%, 99%, 0.125);
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  outline: none;
+  opacity: 0.4;
+  transition: all 0.125s;
+}
+
+.dismiss-btn:hover,
+.dismiss-btn:focus {
+  opacity: 0.9;
 }
 
 .notif,

@@ -6,18 +6,23 @@ import styles from "./input.module.css";
 const Input = ({ label, placeholder, value, onInput, ...rest }) => {
   const InputRef = useRef(null);
 
-  useEffect(
-    function () {
-      if (InputRef.current) {
-        InputRef.current.textContent = value || "";
-      }
-    },
-    [value]
-  );
+  useEffect(() => {
+    if (InputRef.current) {
+      InputRef.current.textContent = value || "";
+    }
+  }, [value]);
 
   function handleInputChange() {
-    if (InputRef.current)
-      onInput(DOMPurify.sanitize(InputRef.current.textContent));
+    if (InputRef.current) {
+      const sanitizedValue = DOMPurify.sanitize(InputRef.current.textContent);
+      onInput(sanitizedValue);
+    }
+  }
+
+  function handleKeyDown(event) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+    }
   }
 
   return (
@@ -27,6 +32,7 @@ const Input = ({ label, placeholder, value, onInput, ...rest }) => {
       aria-label={label}
       data-placeholder={placeholder}
       onInput={handleInputChange}
+      onKeyDown={handleKeyDown}
       ref={InputRef}
       className={styles.input}
       aria-multiline="true"
