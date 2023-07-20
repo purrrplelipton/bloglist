@@ -157,10 +157,6 @@ label[for="terms-of-service"] input[type="checkbox"] {
   transition: all 0.125s;
 }
 
-.sign-up-form button[type="submit"] p {
-  display: none;
-}
-
 .sign-up-form button[type="submit"]:disabled {
   background-color: hsla(43, 100%, 66%, 0.5);
 }

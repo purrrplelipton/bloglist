@@ -102,10 +102,6 @@
   background-color: hsla(43, 100%, 66%, 0.5);
 }
 
-.sign-in-form button[type="submit"] p {
-  display: none;
-}
-
 .google-sign-in {
   font-size: 1.125em;
   width: 100%;

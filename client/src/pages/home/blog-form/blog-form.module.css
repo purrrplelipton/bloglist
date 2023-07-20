@@ -90,7 +90,3 @@
 .create-form button:disabled {
   background-color: hsl(43, 100%, 66%, 0.5);
 }
-
-.create-form button p {
-  display: none;
-}

@@ -14,7 +14,7 @@
     "client:dev": "cd client && yarn dev",
     "server": "cd server && yarn start",
     "client": "cd client && yarn start",
-    "build": "cd client && yarn build && cd ../server && rimraf dist && cd ../client && mv dist ../server"
+    "build": "cd client && rimraf dist && yarn build && cd ../server && rimraf dist && cd ../client && mv dist ../server"
   },
   "dependencies": {
     "concurrently": "^8.2.0",

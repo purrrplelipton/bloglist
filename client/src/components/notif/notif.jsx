@@ -11,25 +11,21 @@ const Notif = () => {
     dispatch,
   } = useContext(AppContext);
 
-  const [dismissQueue, setDismissQueue] = useState([]);
+  const [dismissingId, setDismissingId] = useState(null);
 
   useEffect(() => {
-    if (dismissQueue.length) {
-      const dismissingId = dismissQueue[0];
+    if (notifs.length) {
       const timeoutId = setTimeout(() => {
+        setDismissingId(notifs[0].id);
         dispatch((prv) => ({
+          ...prv,
           notifs: prv.notifs.filter((notif) => notif.id !== dismissingId),
         }));
-        setDismissQueue((prv) => prv.slice(1));
-      }, dismissDelay * 15);
+      }, dismissDelay * 6);
 
       return () => clearTimeout(timeoutId);
     }
-  }, [dismissQueue, dispatch, notifs]);
-
-  useEffect(() => {
-    if (notifs.length) setDismissQueue((prv) => [...prv, notifs[0].id]);
-  }, [notifs]);
+  }, [dismissingId, dispatch, notifs]);
 
   return (
     <div id="notifs-container" className={styles.notifsContainer}>
@@ -37,19 +33,19 @@ const Notif = () => {
         <div
           key={id}
           className={`${styles.container} ${id.split(/-/g).pop()} ${
-            !dismissQueue.includes(id) ? styles.shrink : ""
+            id === dismissingId ? styles.shrink : ""
           }`}
         >
           <div
             className={`${styles.notif} ${styles[color]} ${
-              styles[dismissQueue.includes(id) ? "roll-out" : "roll-up"]
+              styles[id === dismissingId ? "roll-out" : "roll-up"]
             }`}
           >
             <p>{message}</p>
             <button
               type="button"
               aria-label="Dismiss notification"
-              onClick={() => setDismissQueue((prv) => [...prv, id])}
+              onClick={() => setDismissingId(id)}
               className={styles.dismissBtn}
             >
               <X />

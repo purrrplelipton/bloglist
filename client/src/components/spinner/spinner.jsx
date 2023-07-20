@@ -1,9 +1,10 @@
 import PropTypes from "prop-types";
+import React from "react";
 import styles from "./spinner.module.css";
 
-const Spinner = ({ width }) => {
+const Spinner = ({ text, width }) => {
   return (
-    <div>
+    <>
       <span style={{ width }} className={styles.spRoot} role="progressbar">
         <svg className={styles.spSvg} viewBox="22 22 44 44">
           <circle
@@ -16,11 +17,14 @@ const Spinner = ({ width }) => {
           ></circle>
         </svg>
       </span>
-      <p>Hold on a sec</p>
-    </div>
+      {text && <p className={styles.spText}>{text}</p>}
+    </>
   );
 };
 
-Spinner.propTypes = { width: PropTypes.number.isRequired };
+Spinner.propTypes = {
+  width: PropTypes.number.isRequired,
+  text: PropTypes.string,
+};
 
 export default Spinner;

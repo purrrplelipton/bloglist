@@ -18,7 +18,7 @@ const Home = lazy(() =>
 function App() {
   return (
     <Fragment>
-      <Suspense fallback={<Spinner width={40} />}>
+      <Suspense fallback={<Spinner text={"Hold on a sec"} width={40} />}>
         <Routes>
           <Route
             path="/sign-up"

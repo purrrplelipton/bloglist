@@ -3,12 +3,28 @@
   right: 0;
   bottom: 1rem;
   left: 0;
+  margin: 0 auto;
+  border-radius: 0;
+  background-color: hsla(0, 0%, 99%, 0.1);
+  padding: 0;
+  -webkit-backdrop-filter: blur(0px);
+  backdrop-filter: blur(0px);
+  filter: blur(0px);
+  max-width: 320px;
+  max-height: 106px;
+  overflow-y: auto;
+  transition: padding 0.25, border-radius 0.25s;
+}
+
+.notifs-container:not(:empty) {
+  border-radius: 8px;
+  padding: 10px;
 }
 
 .container {
   overflow: hidden;
   max-height: 200px;
-  transition: max-height 0.5s;
+  transition: all 0.5s;
 }
 
 .container:not(:last-child) {
@@ -17,6 +33,7 @@
 
 .container.shrink {
   max-height: 0;
+  margin-bottom: 0;
 }
 
 .notif {

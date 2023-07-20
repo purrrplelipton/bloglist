@@ -9,7 +9,7 @@ export const AppContext = createContext(initialState);
 
 export const AppProvider = ({ children }) => {
   const [state, dispatch] = useState(initialState);
-  console.log(state.notifs);
+
   return (
     <AppContext.Provider value={{ state, dispatch }}>
       {children}

@@ -1,7 +1,3 @@
-div:has(.sp-root) {
-  text-align: center;
-}
-
 @keyframes primary {
   0% {
     transform: rotate(0deg);
@@ -12,9 +8,10 @@ div:has(.sp-root) {
 }
 
 .sp-root {
-  display: inline-block;
+  display: block;
   color: inherit;
   animation: 1.4s linear 0s infinite normal none running primary;
+  margin: 0 auto;
 }
 
 .sp-svg {
@@ -41,4 +38,8 @@ div:has(.sp-root) {
   stroke-dasharray: 80px, 200px;
   stroke-dashoffset: 0;
   animation: secondary 1.4s ease-in-out infinite;
+}
+
+.sp-text {
+  text-align: center;
 }

@@ -1,9 +1,10 @@
-import { Blog } from "@components/blog";
+import { Spinner } from "@components/spinner";
 import { AppContext } from "@contexts/";
 import { getBlogs } from "@services/blog.js";
 import { getUser } from "@services/user.js";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { Blog } from "./blog";
 import { BlogForm } from "./blog-form";
 import { Footer } from "./footer";
 import { Header } from "./header";
@@ -21,8 +22,11 @@ const Home = () => {
     faves: [],
     formIsOpen: false,
   });
+  const [fetching, setFetching] = useState(false);
 
   useEffect(() => {
+    setFetching(true);
+
     getBlogs()
       .then((data) => homeDispatch((prv) => ({ ...prv, blogs: data })))
       .catch(({ message }) =>
@@ -35,7 +39,8 @@ const Home = () => {
             id: uuidv4(),
           }),
         }))
-      );
+      )
+      .finally(() => setFetching(false));
   }, []);
 
   useEffect(() => {
@@ -55,9 +60,11 @@ const Home = () => {
     <HomeContext.Provider value={{ homeStates, homeDispatch }}>
       <Header />
       <section className={styles.blogs} aria-live="polite">
-        {homeStates.blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} />
-        ))}
+        {fetching ? (
+          <Spinner text={"Please wait"} width={40} />
+        ) : (
+          homeStates.blogs.map((blog) => <Blog key={blog.id} blog={blog} />)
+        )}
       </section>
       <BlogForm />
       <Footer />
