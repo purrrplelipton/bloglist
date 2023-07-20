@@ -1,23 +1,24 @@
 import { hash } from "bcrypt";
 import { Router } from "express";
+import pkg from "jsonwebtoken";
 import { User } from "../models/user.js";
+import { SECRET } from "../utils/config.js";
+const { verify } = pkg;
+
+const getToken = (req) => {
+  const token = req.headers.authorization;
+  if (token && /^Bearer\s/.test(token)) return token.replace(/^Bearer\s/, "");
+  return null;
+};
 
 const UsersRouter = Router();
 
-UsersRouter.get("/", async (_req, res) => {
-  const user = await User.find({}).populate("blogs", {
-    title: 1,
-    content: 1,
-    thumbnail: 1,
-    likes: 1,
-    dislikes: 1,
-  });
-  res.json(user);
-});
-
-UsersRouter.get("/:id", async (req, res) => {
-  const user = await User.findById(req.params.id);
-  res.json(user);
+UsersRouter.get("/", async (req, res) => {
+  const { id } = verify(getToken(req), SECRET);
+  if (id) {
+    const user = await User.findById(id);
+    if (user) res.json(user);
+  }
 });
 
 UsersRouter.post("/", async (req, res) => {
@@ -27,14 +28,16 @@ UsersRouter.post("/", async (req, res) => {
   res.json(savedUser);
 });
 
-UsersRouter.put("/:id", async (req, res) => {
-  const updatedFields = req.body;
-  const updatedUser = await User.findByIdAndUpdate(
-    req.params.id,
-    { $set: updatedFields },
-    { new: true, runValidators: true, context: "query" }
-  );
-  res.json(updatedUser);
+UsersRouter.patch("/", async (req, res) => {
+  const { id } = verify(getToken(req), SECRET);
+  if (id) {
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { favorites: req.body.favorites },
+      { new: true, runValidators: true, context: "query" }
+    );
+    if (updatedUser) res.json(updatedUser);
+  }
 });
 
 UsersRouter.delete("/:id", async (req, res) => {

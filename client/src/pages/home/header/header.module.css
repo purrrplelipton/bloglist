@@ -4,6 +4,7 @@
   align-items: center;
   justify-content: space-between;
   position: fixed;
+  z-index: 10;
   top: 0;
   right: 0;
   height: 64px;
@@ -12,7 +13,7 @@
   margin: 14px;
   padding: 8px;
   background-color: #ffce54;
-  box-shadow: 0 2px 2px hsla(0, 0%, 0%, 0.3);
+  box-shadow: 0 4px 6px hsla(0, 0%, 0%, 0.3);
 }
 
 .drawer-toggler {

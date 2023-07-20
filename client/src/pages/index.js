@@ -1,5 +1,5 @@
-import { Blogs } from "./blogs";
+import { Home } from "./home";
 import { SignIn } from "./sign-in";
 import { SignUp } from "./sign-up";
 
-export { Blogs, SignIn, SignUp };
+export { Home, SignIn, SignUp };

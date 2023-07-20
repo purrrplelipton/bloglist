@@ -11,8 +11,8 @@ const SignUp = lazy(() =>
 const SignIn = lazy(() =>
   import("./pages").then((module) => ({ default: module.SignIn }))
 );
-const Blogs = lazy(() =>
-  import("./pages").then((module) => ({ default: module.Blogs }))
+const Home = lazy(() =>
+  import("./pages").then((module) => ({ default: module.Home }))
 );
 
 function App() {
@@ -31,7 +31,7 @@ function App() {
           <Route
             path="/"
             element={
-              isAllowed() ? <Blogs /> : <Navigate to="/sign-in" replace />
+              isAllowed() ? <Home /> : <Navigate to="/sign-in" replace />
             }
           />
         </Routes>

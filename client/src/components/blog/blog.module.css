@@ -6,6 +6,30 @@
   border-radius: 8px;
   border: 2px solid hsl(0, 0%, 40%);
   padding: 8px;
+  position: relative;
+}
+
+.blog:not(:last-child) {
+  margin-bottom: 12px;
+}
+
+.fave-toggle-btn {
+  position: absolute;
+  padding: 8px;
+  border-radius: 8px;
+  top: 8px;
+  right: 8px;
+  background: linear-gradient(-120deg, hsla(0, 0%, 0%, 0.5), transparent 70%);
+}
+
+.fave-toggle-btn button {
+  border: none;
+  color: hsla(0, 0%, 99%);
+  background-color: hsla(0, 0%, 99%, 0.1);
+  padding: 8px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
 }
 
 .blog-title {
@@ -27,6 +51,12 @@
   z-index: -1;
   opacity: 0.5;
 }
+
+.blog-thumbnail {
+  margin-bottom: 0.75em;
+  border-radius: 8px;
+}
+
 .blog-content {
   text-decoration-line: underline;
   text-decoration-style: solid;

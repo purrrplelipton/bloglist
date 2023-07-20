@@ -5,39 +5,50 @@ import { Spinner } from "@components/spinner";
 import { AppContext } from "@contexts/";
 import { addBlog } from "@services/blog.js";
 import DOMPurify from "dompurify";
-import PropTypes from "prop-types";
 import React, { useContext, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import styles from "./add-blog.module.css";
+import { HomeContext } from "../home";
+import styles from "./blog-form.module.css";
 
-const AddBlog = ({ isOpen, setIsOpen }) => {
+const defaultBlog = { title: "", content: "", thumbnail: null };
+
+const BlogForm = () => {
   const { dispatch } = useContext(AppContext);
-  const [blog, setBlog] = useState({ title: "", content: "", thumbnail: null });
+  const {
+    homeStates: { formIsOpen },
+    homeDispatch,
+  } = useContext(HomeContext);
+  const [blog, setBlog] = useState(defaultBlog);
   const [uploading, setUploading] = useState(false);
 
-  async function uploadBlog(event) {
+  function closeForm() {
+    homeDispatch((prv) => ({ ...prv, formIsOpen: false }));
+  }
+
+  function uploadBlog(event) {
     event.preventDefault();
     setUploading(true);
 
-    try {
-      await addBlog(blog);
-      setBlog((prv) => ({ ...prv, title: "", content: "", thumbnail: null }));
-      dispatch((prv) => ({
-        ...prv,
-        notifs: prv.notifs.concat({
-          message: "Blog Uploaded",
-          color: "success",
-          id: uuidv4(),
-        }),
-      }));
-    } catch ({ message }) {
-      dispatch((prv) => ({
-        ...prv,
-        notifs: prv.notifs.concat({ message, color: "error", id: uuidv4() }),
-      }));
-    }
-
-    setUploading(false);
+    addBlog(blog)
+      .then(() =>
+        dispatch((prv) => ({
+          ...prv,
+          notifs: prv.notifs.concat({
+            message: "Blog Uploaded",
+            color: "success",
+            id: uuidv4(),
+          }),
+        }))
+      )
+      .catch(({ message }) =>
+        dispatch((prv) => ({
+          ...prv,
+          notifs: prv.notifs.concat({ message, color: "error", id: uuidv4() }),
+        })).finally(() => {
+          setUploading(false);
+          setBlog(defaultBlog);
+        })
+      );
   }
 
   function handleThumbnailChange(event) {
@@ -51,7 +62,7 @@ const AddBlog = ({ isOpen, setIsOpen }) => {
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+    <Modal isOpen={formIsOpen} onClose={closeForm}>
       <div className={styles.formWrapper}>
         <form
           action="/upload-blog"
@@ -113,9 +124,4 @@ const AddBlog = ({ isOpen, setIsOpen }) => {
   );
 };
 
-AddBlog.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  setIsOpen: PropTypes.func.isRequired,
-};
-
-export default AddBlog;
+export default BlogForm;
