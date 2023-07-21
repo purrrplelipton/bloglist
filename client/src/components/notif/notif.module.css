@@ -3,6 +3,7 @@
   right: 0;
   bottom: 1rem;
   left: 0;
+  z-index: 99;
   margin: 0 auto;
   border-radius: 0;
   background-color: hsla(0, 0%, 99%, 0.1);

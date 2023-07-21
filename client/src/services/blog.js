@@ -27,9 +27,16 @@ export async function addBlog(blog) {
   }
 }
 
-export async function updateBlog(id, field) {
-  const { data } = await api.put(`/${id}`, field);
-  return data;
+export async function updateBlog(id, payload) {
+  const bloggerzon = localStorage.getItem("bloglist");
+
+  if (bloggerzon) {
+    const { token } = JSON.parse(bloggerzon);
+    const { data } = await api.patch(`/${id}`, payload, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return data;
+  }
 }
 
 export async function deleteBlog(id) {

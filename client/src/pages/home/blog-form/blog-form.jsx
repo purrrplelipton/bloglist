@@ -30,7 +30,8 @@ const BlogForm = () => {
     setUploading(true);
 
     addBlog(blog)
-      .then(() =>
+      .then((savedBlog) => {
+        homeDispatch((prv) => ({ ...prv, blogs: [...prv.blogs, savedBlog] }));
         dispatch((prv) => ({
           ...prv,
           notifs: prv.notifs.concat({
@@ -38,17 +39,18 @@ const BlogForm = () => {
             color: "success",
             id: uuidv4(),
           }),
-        }))
-      )
+        }));
+      })
       .catch(({ message }) =>
         dispatch((prv) => ({
           ...prv,
           notifs: prv.notifs.concat({ message, color: "error", id: uuidv4() }),
-        })).finally(() => {
-          setUploading(false);
-          setBlog(defaultBlog);
-        })
-      );
+        }))
+      )
+      .finally(() => {
+        setUploading(false);
+        setBlog(defaultBlog);
+      });
   }
 
   function handleThumbnailChange(event) {

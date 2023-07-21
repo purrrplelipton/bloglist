@@ -118,10 +118,10 @@ export const Trash = () => (
   </svg>
 );
 
-export const Pin = () => (
+export const ThumbUp = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    className="icon icon-tabler icon-tabler-pin"
+    className="icon icon-tabler icon-tabler-thumb-up"
     width="24"
     height="24"
     viewBox="0 0 24 24"
@@ -132,16 +132,14 @@ export const Pin = () => (
     strokeLinejoin="round"
   >
     <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-    <path d="M15 4.5l-4 4l-4 1.5l-1.5 1.5l7 7l1.5 -1.5l1.5 -4l4 -4"></path>
-    <path d="M9 15l-4.5 4.5"></path>
-    <path d="M14.5 4l5.5 5.5"></path>
+    <path d="M7 11v8a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1v-7a1 1 0 0 1 1 -1h3a4 4 0 0 0 4 -4v-1a2 2 0 0 1 4 0v5h3a2 2 0 0 1 2 2l-1 5a2 3 0 0 1 -2 2h-7a3 3 0 0 1 -3 -3"></path>
   </svg>
 );
 
-export const PinOff = () => (
+export const ThumbDown = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    className="icon icon-tabler icon-tabler-pinned-off"
+    className="icon icon-tabler icon-tabler-thumb-down"
     width="24"
     height="24"
     viewBox="0 0 24 24"
@@ -152,10 +150,61 @@ export const PinOff = () => (
     strokeLinejoin="round"
   >
     <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-    <path d="M3 3l18 18"></path>
-    <path d="M15 4.5l-3.249 3.249m-2.57 1.433l-2.181 .818l-1.5 1.5l7 7l1.5 -1.5l.82 -2.186m1.43 -2.563l3.25 -3.251"></path>
-    <path d="M9 15l-4.5 4.5"></path>
-    <path d="M14.5 4l5.5 5.5"></path>
+    <path d="M7 13v-8a1 1 0 0 0 -1 -1h-2a1 1 0 0 0 -1 1v7a1 1 0 0 0 1 1h3a4 4 0 0 1 4 4v1a2 2 0 0 0 4 0v-5h3a2 2 0 0 0 2 -2l-1 -5a2 3 0 0 0 -2 -2h-7a3 3 0 0 0 -3 3"></path>
+  </svg>
+);
+
+export const ThumbUpFilled = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="icon icon-tabler icon-tabler-thumb-up-filled"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    strokeWidth="2"
+    stroke="currentColor"
+    fill="none"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+    <path
+      d="M13 3a3 3 0 0 1 2.995 2.824l.005 .176v4h2a3 3 0 0 1 2.98 2.65l.015 .174l.005 .176l-.02 .196l-1.006 5.032c-.381 1.626 -1.502 2.796 -2.81 2.78l-.164 -.008h-8a1 1 0 0 1 -.993 -.883l-.007 -.117l.001 -9.536a1 1 0 0 1 .5 -.865a2.998 2.998 0 0 0 1.492 -2.397l.007 -.202v-1a3 3 0 0 1 3 -3z"
+      strokeWidth="0"
+      fill="currentColor"
+    ></path>
+    <path
+      d="M5 10a1 1 0 0 1 .993 .883l.007 .117v9a1 1 0 0 1 -.883 .993l-.117 .007h-1a2 2 0 0 1 -1.995 -1.85l-.005 -.15v-7a2 2 0 0 1 1.85 -1.995l.15 -.005h1z"
+      strokeWidth="0"
+      fill="currentColor"
+    ></path>
+  </svg>
+);
+
+export const ThumbDownFilled = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="icon icon-tabler icon-tabler-thumb-down-filled"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    strokeWidth="2"
+    stroke="currentColor"
+    fill="none"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+    <path
+      d="M13 21.008a3 3 0 0 0 2.995 -2.823l.005 -.177v-4h2a3 3 0 0 0 2.98 -2.65l.015 -.173l.005 -.177l-.02 -.196l-1.006 -5.032c-.381 -1.625 -1.502 -2.796 -2.81 -2.78l-.164 .008h-8a1 1 0 0 0 -.993 .884l-.007 .116l.001 9.536a1 1 0 0 0 .5 .866a2.998 2.998 0 0 1 1.492 2.396l.007 .202v1a3 3 0 0 0 3 3z"
+      strokeWidth="0"
+      fill="currentColor"
+    ></path>
+    <path
+      d="M5 14.008a1 1 0 0 0 .993 -.883l.007 -.117v-9a1 1 0 0 0 -.883 -.993l-.117 -.007h-1a2 2 0 0 0 -1.995 1.852l-.005 .15v7a2 2 0 0 0 1.85 1.994l.15 .005h1z"
+      strokeWidth="0"
+      fill="currentColor"
+    ></path>
   </svg>
 );
 

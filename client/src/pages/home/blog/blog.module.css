@@ -6,30 +6,10 @@
   border-radius: 8px;
   border: 2px solid hsl(0, 0%, 40%);
   padding: 8px;
-  position: relative;
 }
 
 .blog:not(:last-child) {
   margin-bottom: 12px;
-}
-
-.fave-toggle-btn {
-  position: absolute;
-  padding: 8px;
-  border-top-right-radius: 8px;
-  top: 8px;
-  right: 8px;
-  background: linear-gradient(-130deg, hsla(0, 0%, 0%, 0.75), transparent 50%);
-}
-
-.fave-toggle-btn button {
-  border: none;
-  color: hsla(0, 0%, 99%);
-  background-color: hsla(0, 0%, 99%, 0.1);
-  padding: 8px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
 }
 
 .blog-title {
@@ -52,9 +32,48 @@
   opacity: 0.5;
 }
 
+.blog-doohickeys {
+  position: relative;
+}
+
+.fave-toggle-btn {
+  position: absolute;
+  padding: 8px;
+  border-top-left-radius: 8px;
+  top: 0;
+  left: 0;
+}
+
+.fave-toggle-btn button {
+  border: none;
+  color: hsla(0, 0%, 99%);
+  background-color: hsla(0, 0%, 0%, 0.1);
+  padding: 8px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
 .blog-thumbnail {
-  margin-bottom: 0.75em;
   border-radius: 8px;
+  margin: 0.75em 0;
+}
+
+.btn-wrapper {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1em;
+}
+
+.btn-wrapper button {
+  display: grid;
+  place-items: center;
+  border: none;
+  padding: 8px;
+  color: #333333;
+  background-color: transparent;
 }
 
 .blog-content {
