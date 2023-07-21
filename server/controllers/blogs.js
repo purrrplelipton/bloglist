@@ -47,9 +47,8 @@ BlogsRouter.post("/", async function (req, res) {
 
 BlogsRouter.patch("/:id", async function (req, res) {
   const blogId = req.params.id,
-    { userId, updatedProp } = req.body,
-    { id } = getToken(req, SECRET);
-  console.log(`tokenId: ${id} || payloadId: ${userId}`);
+    { userId, updatedProps } = req.body,
+    { id } = verify(getToken(req), SECRET);
 
   if (id && id === userId) {
     const user = await User.findById(id);
@@ -57,7 +56,7 @@ BlogsRouter.patch("/:id", async function (req, res) {
     if (user) {
       const updatedBlog = await Blog.findByIdAndUpdate(
         blogId,
-        { ...updatedProp },
+        { ...updatedProps },
         {
           new: true,
           runValidators: true,
@@ -71,16 +70,13 @@ BlogsRouter.patch("/:id", async function (req, res) {
           dislikes: updatedBlog.dislikes,
         });
 
-      return console.log("blog doesn't exist");
-      // res.status(404).json({ error: "blog doesn't exist" });
+      return res.status(404).json({ error: "blog doesn't exist" });
     }
 
-    return console.log("user doesn't exist");
-    // res.status(404).json({ error: "user doesn't exist" });
+    return res.status(404).json({ error: "user doesn't exist" });
   }
 
-  return console.log("token and id mismatch");
-  // res.status(401).json({ error: "token and id mismatch" });
+  return res.status(401).json({ error: "token and id mismatch" });
 });
 
 BlogsRouter.delete("/:id", async function (req, res) {

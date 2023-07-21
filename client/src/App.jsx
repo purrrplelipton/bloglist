@@ -5,9 +5,9 @@ import Notification from "./components/notif/notif";
 import { Spinner } from "./components/spinner";
 import { isAllowed } from "./services/auth";
 
-const SignUp = lazy(() => import("./pages/sign-up"));
-const SignIn = lazy(() => import("./pages/sign-in"));
-const Home = lazy(() => import("./pages/home"));
+const SignUp = lazy(() => import("./pages/sign-up/sign-up"));
+const SignIn = lazy(() => import("./pages/sign-in/sign-in"));
+const Home = lazy(() => import("./pages/home/home"));
 
 function App() {
   return (

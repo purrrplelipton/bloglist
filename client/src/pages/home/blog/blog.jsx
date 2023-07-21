@@ -7,7 +7,7 @@ import {
   ThumbUpFilled,
 } from "@assets/vectors/tabler-icons";
 import { AppContext } from "@contexts/";
-import { HomeContext } from "@pages/home";
+import { HomeContext } from "@pages/home/home";
 import { updateBlog } from "@services/blog.js";
 import { updateUser } from "@services/user.js";
 import PropTypes from "prop-types";
@@ -38,32 +38,31 @@ const Blog = ({ blog }) => {
     }
   }, [blogStates.isLiked, blogStates.isDisliked, setBlogStates]);
 
-  function handleFaveToggle(id) {
-    updateUser({
-      favorites: blogStates.isAFave
-        ? faves.filter((id) => id !== id)
-        : [...faves, id],
-    })
-      .then(({ favorites }) => {
-        homeDispatch((prv) => ({ ...prv, faves: favorites }));
-        setBlogStates((prv) => ({ ...prv, isAFave: !prv.isAFave }));
-        dispatch((prv) => ({
-          ...prv,
-          notifs: prv.notifs.concat({
-            message: favorites.includes(id)
-              ? "Blog added to favorites"
-              : "Blog removed from favorites",
-            color: "info",
-            id: uuidv4(),
-          }),
-        }));
-      })
-      .catch(({ message }) =>
-        dispatch((prv) => ({
-          ...prv,
-          notifs: prv.notifs.concat({ message, color: "error", id: uuidv4() }),
-        }))
-      );
+  async function handleFaveToggle() {
+    try {
+      const { favorites } = await updateUser({
+        favorites: blogStates.isAFave
+          ? faves.filter((id) => id !== blog.id)
+          : [...faves, blog.id],
+      });
+      homeDispatch((prv) => ({ ...prv, faves: favorites }));
+      setBlogStates((prv) => ({ ...prv, isAFave: !prv.isAFave }));
+      dispatch((prv) => ({
+        ...prv,
+        notifs: prv.notifs.concat({
+          message: favorites.includes(blog.id)
+            ? "Blog added to favorites"
+            : "Blog removed from favorites",
+          color: "info",
+          id: uuidv4(),
+        }),
+      }));
+    } catch ({ message }) {
+      dispatch((prv) => ({
+        ...prv,
+        notifs: prv.notifs.concat({ message, color: "error", id: uuidv4() }),
+      }));
+    }
   }
 
   async function handleLikeToggle() {
@@ -74,10 +73,10 @@ const Blog = ({ blog }) => {
         try {
           const { likes } = await updateBlog(blog.id, {
             userId: id,
-            likes: blog.likes.filter((like) => like !== id),
+            updatedProps: { likes: blog.likes.filter((like) => like !== id) },
           });
           setBlogStates((prv) => ({ ...prv, isLiked: likes.includes(id) }));
-          dispatch((prv) => ({
+          homeDispatch((prv) => ({
             ...prv,
             blogs: prv.blogs.map((prvBlog) =>
               prvBlog.id === blog.id ? { ...prvBlog, likes } : prvBlog
@@ -97,10 +96,10 @@ const Blog = ({ blog }) => {
         try {
           const { likes } = await updateBlog(blog.id, {
             userId: id,
-            likes: [...blog.likes, id],
+            updatedProps: { likes: [...blog.likes, id] },
           });
           setBlogStates((prv) => ({ ...prv, likes: likes.includes(id) }));
-          dispatch((prv) => ({
+          homeDispatch((prv) => ({
             ...prv,
             blogs: prv.blogs.map((prvBlog) =>
               prvBlog.id === blog.id ? { ...prvBlog, likes } : prvBlog
@@ -130,13 +129,15 @@ const Blog = ({ blog }) => {
         try {
           const { dislikes } = await updateBlog(blog.id, {
             userId: id,
-            dislikes: blog.dislikes.filter((dislike) => dislike !== id),
+            updatedProps: {
+              dislikes: blog.dislikes.filter((dislike) => dislike !== id),
+            },
           });
           setBlogStates((prv) => ({
             ...prv,
             isDisliked: dislikes.includes(id),
           }));
-          dispatch((prv) => ({
+          homeDispatch((prv) => ({
             ...prv,
             blogs: prv.blogs.map((prvBlog) =>
               prvBlog.id === blog.id ? { ...prvBlog, dislikes } : prvBlog
@@ -156,13 +157,13 @@ const Blog = ({ blog }) => {
         try {
           const { dislikes } = updateBlog(blog.id, {
             userId: id,
-            dislikes: [...blog.dislikes, id],
+            updatedProps: { dislikes: [...blog.dislikes, id] },
           });
           setBlogStates((prv) => ({
             ...prv,
             dislikes: dislikes.includes(id),
           }));
-          dispatch((prv) => ({
+          homeDispatch((prv) => ({
             ...prv,
             blogs: prv.blogs.map((prvBlog) =>
               prvBlog.id === blog.id ? { ...prvBlog, dislikes } : prvBlog
@@ -191,7 +192,7 @@ const Blog = ({ blog }) => {
             aria-label={
               blogStates.isAFave ? "remove from favorites" : "add to favoriites"
             }
-            onClick={() => handleFaveToggle(blog.id)}
+            onClick={handleFaveToggle}
           >
             {blogStates.isAFave ? <HeartFilled /> : <Heart />}
           </button>
