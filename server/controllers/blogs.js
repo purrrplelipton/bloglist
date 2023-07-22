@@ -64,11 +64,7 @@ BlogsRouter.patch("/:id", async function (req, res) {
         }
       );
 
-      if (updatedBlog)
-        return res.json({
-          likes: updatedBlog.likes,
-          dislikes: updatedBlog.dislikes,
-        });
+      if (updatedBlog) return res.json(updatedBlog);
 
       return res.status(404).json({ error: "blog doesn't exist" });
     }

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const api = axios.create({ baseURL: "http://localhost:3000/api/users" });
+const api = axios.create({ baseURL: "/api/users" });
 
 export async function getUser() {
   const bloglist = localStorage.getItem("bloglist");

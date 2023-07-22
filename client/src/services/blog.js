@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000/api/blogs",
+  baseURL: "/api/blogs",
 });
 
 export async function getBlogs() {

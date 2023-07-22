@@ -11,42 +11,26 @@ import { HomeContext } from "@pages/home/home";
 import { updateBlog } from "@services/blog.js";
 import { updateUser } from "@services/user.js";
 import PropTypes from "prop-types";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { v4 as uuidv4 } from "uuid";
 import styles from "./blog.module.css";
 
 const Blog = ({ blog }) => {
-  const { dispatch } = useContext(AppContext);
-  const {
-    homeStates: { faves },
-    homeDispatch,
-  } = useContext(HomeContext);
-  const [blogStates, setBlogStates] = useState({
-    isAFave: faves.includes(blog.id),
-    isLiked: false,
-    isDisliked: false,
-  });
+  let userId = null;
+  const bloggerzon = localStorage.getItem("bloglist");
+  if (bloggerzon) userId = JSON.parse(bloggerzon).id;
 
-  useEffect(() => {
-    const bloggerzon = localStorage.getItem("bloglist");
-    if (bloggerzon) {
-      const { id } = JSON.parse(bloggerzon);
-      if (blog.likes.includes(id))
-        setBlogStates((prv) => ({ ...prv, isLiked: true }));
-      else if (blog.dislikes.includes(id))
-        setBlogStates((prv) => ({ ...prv, isDisliked: true }));
-    }
-  }, [blogStates.isLiked, blogStates.isDisliked, setBlogStates]);
+  const { dispatch } = useContext(AppContext);
+  const { homeStates, homeDispatch } = useContext(HomeContext);
 
   async function handleFaveToggle() {
     try {
       const { favorites } = await updateUser({
-        favorites: blogStates.isAFave
-          ? faves.filter((id) => id !== blog.id)
-          : [...faves, blog.id],
+        favorites: homeStates.faves.includes(blog.id)
+          ? homeStates.faves.filter((blogId) => blogId !== blog.id)
+          : [...homeStates.faves, blog.id],
       });
       homeDispatch((prv) => ({ ...prv, faves: favorites }));
-      setBlogStates((prv) => ({ ...prv, isAFave: !prv.isAFave }));
       dispatch((prv) => ({
         ...prv,
         notifs: prv.notifs.concat({
@@ -65,24 +49,21 @@ const Blog = ({ blog }) => {
     }
   }
 
-  async function handleLikeToggle() {
-    const bloggerzon = localStorage.getItem("bloglist");
-    if (bloggerzon) {
-      const { id } = JSON.parse(bloggerzon);
-      if (blogStates.isLiked) {
-        try {
-          const { likes } = await updateBlog(blog.id, {
-            userId: id,
-            updatedProps: { likes: blog.likes.filter((like) => like !== id) },
-          });
-          setBlogStates((prv) => ({ ...prv, isLiked: likes.includes(id) }));
+  function handleLikeToggle() {
+    if (blog.likes.includes(userId)) {
+      updateBlog(blog.id, {
+        userId,
+        updatedProps: { likes: blog.likes.filter((like) => like !== userId) },
+      })
+        .then(({ likes }) =>
           homeDispatch((prv) => ({
             ...prv,
             blogs: prv.blogs.map((prvBlog) =>
-              prvBlog.id === blog.id ? { ...prvBlog, likes } : prvBlog
+              prvBlog.id === blog.id ? { prvBlog, likes } : prvBlog
             ),
-          }));
-        } catch ({ message }) {
+          }))
+        )
+        .catch(({ message }) =>
           dispatch((prv) => ({
             ...prv,
             notifs: prv.notifs.concat({
@@ -90,22 +71,25 @@ const Blog = ({ blog }) => {
               color: "error",
               id: uuidv4(),
             }),
-          }));
-        }
-      } else {
-        try {
-          const { likes } = await updateBlog(blog.id, {
-            userId: id,
-            updatedProps: { likes: [...blog.likes, id] },
-          });
-          setBlogStates((prv) => ({ ...prv, likes: likes.includes(id) }));
+          }))
+        );
+    } else {
+      const updatedProps = { likes: [...blog.likes, userId] };
+      if (blog.dislikes.includes(userId))
+        updatedProps.dislikes = blog.dislikes.filter((id) => id !== userId);
+      updateBlog(blog.id, {
+        userId,
+        updatedProps,
+      })
+        .then(({ likes, dislikes }) =>
           homeDispatch((prv) => ({
             ...prv,
             blogs: prv.blogs.map((prvBlog) =>
-              prvBlog.id === blog.id ? { ...prvBlog, likes } : prvBlog
+              prvBlog.id === blog.id ? { ...prvBlog, likes, dislikes } : prvBlog
             ),
-          }));
-        } catch ({ message }) {
+          }))
+        )
+        .catch(({ message }) =>
           dispatch((prv) => ({
             ...prv,
             notifs: prv.notifs.concat({
@@ -113,73 +97,62 @@ const Blog = ({ blog }) => {
               color: "error",
               id: uuidv4(),
             }),
-          }));
-        }
-      }
+          }))
+        );
     }
   }
 
   async function handleDislikeToggle() {
-    const bloggerzon = localStorage.getItem("bloglist");
-    console.log(bloggerzon);
-    if (bloggerzon) {
-      const { id } = JSON.parse(bloggerzon);
-      console.log(id);
-      if (blogStates.isDisliked) {
-        try {
-          const { dislikes } = await updateBlog(blog.id, {
-            userId: id,
-            updatedProps: {
-              dislikes: blog.dislikes.filter((dislike) => dislike !== id),
-            },
-          });
-          setBlogStates((prv) => ({
-            ...prv,
-            isDisliked: dislikes.includes(id),
-          }));
-          homeDispatch((prv) => ({
-            ...prv,
-            blogs: prv.blogs.map((prvBlog) =>
-              prvBlog.id === blog.id ? { ...prvBlog, dislikes } : prvBlog
-            ),
-          }));
-        } catch ({ message }) {
-          dispatch((prv) => ({
-            ...prv,
-            notifs: prv.notifs.concat({
-              message,
-              color: "error",
-              id: uuidv4(),
-            }),
-          }));
-        }
-      } else {
-        try {
-          const { dislikes } = updateBlog(blog.id, {
-            userId: id,
-            updatedProps: { dislikes: [...blog.dislikes, id] },
-          });
-          setBlogStates((prv) => ({
-            ...prv,
-            dislikes: dislikes.includes(id),
-          }));
-          homeDispatch((prv) => ({
-            ...prv,
-            blogs: prv.blogs.map((prvBlog) =>
-              prvBlog.id === blog.id ? { ...prvBlog, dislikes } : prvBlog
-            ),
-          }));
-        } catch ({ message }) {
-          dispatch((prv) => ({
-            ...prv,
-            notifs: prv.notifs.concat({
-              message,
-              color: "error",
-              id: uuidv4(),
-            }),
-          }));
-        }
+    if (blog.dislikes.includes(userId)) {
+      try {
+        const { dislikes } = await updateBlog(blog.id, {
+          userId,
+          updatedProps: {
+            dislikes: blog.dislikes.filter((dislike) => dislike !== userId),
+          },
+        });
+        homeDispatch((prv) => ({
+          ...prv,
+          blogs: prv.blogs.map((prvBlog) =>
+            prvBlog.id === blog.id ? { ...prvBlog, dislikes } : prvBlog
+          ),
+        }));
+      } catch ({ message }) {
+        dispatch((prv) => ({
+          ...prv,
+          notifs: prv.notifs.concat({
+            message,
+            color: "error",
+            id: uuidv4(),
+          }),
+        }));
       }
+    } else {
+      const updatedProps = { dislikes: [...blog.dislikes, userId] };
+      if (blog.likes.includes(userId))
+        updatedProps.likes = blog.likes.filter((id) => id !== userId);
+      updateBlog(blog.id, {
+        userId,
+        updatedProps,
+      })
+        .then(({ likes, dislikes }) =>
+          homeDispatch((prv) => ({
+            ...prv,
+            blogs: prv.blogs.map((prvBlog) =>
+              prvBlog.id === blog.id ? { ...prvBlog, likes, dislikes } : prvBlog
+            ),
+          }))
+        )
+        .catch(({ message }) =>
+          dispatch((prv) => ({
+            ...prv,
+            notifs: prv.notifs.concat({
+              message,
+              color: "error",
+              id: uuidv4(),
+            }),
+          }))
+        );
     }
   }
 
@@ -190,11 +163,13 @@ const Blog = ({ blog }) => {
         <div className={styles.faveToggleBtn}>
           <button
             aria-label={
-              blogStates.isAFave ? "remove from favorites" : "add to favoriites"
+              homeStates.faves.includes(blog.id)
+                ? "remove from favorites"
+                : "add to favoriites"
             }
             onClick={handleFaveToggle}
           >
-            {blogStates.isAFave ? <HeartFilled /> : <Heart />}
+            {homeStates.faves.includes(blog.id) ? <HeartFilled /> : <Heart />}
           </button>
         </div>
         {blog.thumbnail && (
@@ -207,17 +182,23 @@ const Blog = ({ blog }) => {
         <div className={styles.btnWrapper}>
           <button
             type="button"
-            aria-label={blogStates.isLiked ? "Remove like" : "Like"}
+            aria-label={blog.likes.includes(userId) ? "Unlike" : "Like"}
             onClick={handleLikeToggle}
           >
-            {blogStates.isLiked ? <ThumbUpFilled /> : <ThumbUp />}
+            {blog.likes.includes(userId) ? <ThumbUpFilled /> : <ThumbUp />}
           </button>
           <button
             type="button"
-            aria-label={blogStates.isDisliked ? "Remove dislike" : "Disike"}
+            aria-label={
+              blog.dislikes.includes(userId) ? "Remove dislike" : "Disike"
+            }
             onClick={handleDislikeToggle}
           >
-            {blogStates.isDisliked ? <ThumbDownFilled /> : <ThumbDown />}
+            {blog.dislikes.includes(userId) ? (
+              <ThumbDownFilled />
+            ) : (
+              <ThumbDown />
+            )}
           </button>
         </div>
       </div>
