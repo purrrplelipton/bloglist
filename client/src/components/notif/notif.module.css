@@ -5,36 +5,19 @@
   left: 0;
   z-index: 99;
   margin: 0 auto;
-  border-radius: 0;
+  border-radius: 8px;
   background-color: hsla(0, 0%, 99%, 0.1);
-  padding: 0;
-  -webkit-backdrop-filter: blur(0px);
-  backdrop-filter: blur(0px);
-  filter: blur(0px);
+  padding: 8px 8px 0;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
   max-width: 320px;
   max-height: 106px;
   overflow-y: auto;
-  transition: padding 0.25, border-radius 0.25s;
-}
-
-.notifs-container:not(:empty) {
-  border-radius: 8px;
-  padding: 10px;
 }
 
 .container {
   overflow: hidden;
   max-height: 200px;
-  transition: all 0.5s;
-}
-
-.container:not(:last-child) {
-  margin-bottom: 8px;
-}
-
-.container.shrink {
-  max-height: 0;
-  margin-bottom: 0;
 }
 
 .notif {
@@ -52,24 +35,6 @@
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
-}
-
-@keyframes Td6f9AbC {
-  from {
-    transform: translateY(calc(100% + 1rem));
-  }
-  to {
-    transform: translateY(0%);
-  }
-}
-
-.notif.roll-up {
-  animation: Td6f9AbC 0.5s;
-}
-
-.notif.roll-out {
-  transform: translateY(calc(100% + 1rem));
-  flex: 0;
 }
 
 .notif.secondary {

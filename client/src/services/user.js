@@ -3,9 +3,9 @@ import axios from "axios";
 const api = axios.create({ baseURL: "/api/users" });
 
 export async function getUser() {
-  const bloglist = localStorage.getItem("bloglist");
-  if (bloglist) {
-    const { token } = JSON.parse(bloglist);
+  const bloggerzonKey = localStorage.getItem("bloggerzon");
+  if (bloggerzonKey) {
+    const { token } = JSON.parse(bloggerzonKey);
     const { data } = await api.get("/", {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -19,9 +19,9 @@ export async function createUser(user) {
 }
 
 export async function updateUser(field) {
-  const bloglist = localStorage.getItem("bloglist");
-  if (bloglist) {
-    const { token } = JSON.parse(bloglist);
+  const bloggerzonKey = localStorage.getItem("bloggerzon");
+  if (bloggerzonKey) {
+    const { token } = JSON.parse(bloggerzonKey);
     const { data } = await api.patch("/", field, {
       headers: { Authorization: `Bearer ${token}` },
     });

@@ -4,8 +4,8 @@ const api = axios.create({
   baseURL: "/api/blogs",
 });
 
-export async function getBlogs() {
-  const { data } = await api.get("/");
+export async function getBlogs(query) {
+  const { data } = await api.get("/", { params: { search: query } });
   return data;
 }
 
@@ -15,9 +15,9 @@ export async function getBlog(id) {
 }
 
 export async function addBlog(blog) {
-  const bloglist = localStorage.getItem("bloglist");
-  if (bloglist) {
-    const { token } = JSON.parse(bloglist);
+  const bloggerzonKey = localStorage.getItem("bloggerzon");
+  if (bloggerzonKey) {
+    const { token } = JSON.parse(bloggerzonKey);
     const { data } = await api.post("/", blog, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -28,10 +28,10 @@ export async function addBlog(blog) {
 }
 
 export async function updateBlog(id, payload) {
-  const bloggerzon = localStorage.getItem("bloglist");
+  const bloggerzonKey = localStorage.getItem("bloggerzon");
 
-  if (bloggerzon) {
-    const { token } = JSON.parse(bloggerzon);
+  if (bloggerzonKey) {
+    const { token } = JSON.parse(bloggerzonKey);
     const { data } = await api.patch(`/${id}`, payload, {
       headers: { Authorization: `Bearer ${token}` },
     });

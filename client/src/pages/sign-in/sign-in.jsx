@@ -8,6 +8,7 @@ import {
 import { Spinner } from "@components/spinner";
 import { AppContext } from "@contexts/";
 import { signIn } from "@services/auth.js";
+import { motion } from "framer-motion";
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
@@ -26,29 +27,57 @@ const SignIn = () => {
   const [formStates, setFormStates] = useState({ verifying: false });
   const [showPassword, setShowPassword] = useState(false);
 
-  async function verifyDetails(event) {
+  function verifyDetails(event) {
     setFormStates((prv) => ({ ...prv, verifying: true }));
     event.preventDefault();
 
-    try {
-      const data = await signIn(user);
-      localStorage.setItem("bloglist", JSON.stringify(data));
-      setUser(initialUser);
-      navigate("/");
-    } catch ({ message }) {
-      dispatch((prv) => ({
-        ...prv,
-        notifs: prv.notifs.concat({ message, color: "error", id: uuidv4() }),
-      }));
-    }
-
-    setFormStates((prv) => ({ ...prv, verifying: false }));
+    signIn(user)
+      .then((res) => {
+        localStorage.setItem("bloggerzon", JSON.stringify(res));
+        setUser(initialUser);
+        dispatch((prv) => ({
+          ...prv,
+          notifs: prv.notifs.concat({
+            message: "Sign in successful",
+            color: "success",
+            id: uuidv4(),
+          }),
+        }));
+        navigate("/", { replace: true });
+      })
+      .catch(({ message }) =>
+        dispatch((prv) => ({
+          ...prv,
+          notifs: prv.notifs.concat({ message, color: "error", id: uuidv4() }),
+        }))
+      )
+      .finally(() => setFormStates((prv) => ({ ...prv, verifying: false })));
   }
 
   function signInWithGoogle() {}
 
+  const signInVariants = {
+    hidden: {
+      x: "100%",
+      opacity: 0,
+    },
+    visible: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: {
+      x: "-100%",
+      opacity: 0,
+    },
+  };
+
   return (
-    <>
+    <motion.main
+      variants={signInVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+    >
       <form
         className={styles.signInForm}
         action="/sign-in"
@@ -129,7 +158,7 @@ const SignIn = () => {
       <p>
         Don&apos;t have an account? <Link to="/sign-up">sign up</Link>
       </p>
-    </>
+    </motion.main>
   );
 };
 

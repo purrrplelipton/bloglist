@@ -4,7 +4,6 @@
   align-items: center;
   justify-content: space-between;
   position: fixed;
-  z-index: 10;
   top: 0;
   right: 0;
   height: 64px;
@@ -18,7 +17,6 @@
 
 .drawer-toggler {
   color: inherit;
-  border: none;
   padding: 0;
   display: grid;
   place-items: center;
@@ -26,38 +24,42 @@
   background: none;
 }
 
-.drawer-toggler svg {
-  margin: 8px;
-}
-
-.header label {
+.blog-search {
   display: inherit;
   flex-flow: row nowrap;
   align-items: center;
-  background-color: hsla(0, 0%, 99%, 0.2);
+  background-color: transparent;
   border-radius: 6px;
+  background-color: hsla(0, 0%, 99%, 0.2);
 }
 
-.header label svg {
-  margin: 8px;
+.blog-search button[type="submit"] {
+  padding: 8px;
+  border-radius: 6px;
+  background-color: transparent;
 }
 
-.header label input {
+.blog-search button[type="submit"]:focus {
+  background-color: hsla(0, 0%, 99%, 0.4);
+}
+
+.blog-search input {
   outline-width: 0;
   border: none;
   background: none;
   padding: 8px;
-  padding-left: 0;
+  padding-right: 0;
   color: inherit;
 }
 
-.header label input::placeholder {
+.blog-search input::placeholder {
   text-transform: capitalize;
   color: hsla(0, 0%, 0%, 0.5);
 }
 
-.header label:focus-within {
-  box-shadow: 0 0 0 2px hsla(0, 0%, 99%, 0.75);
+.blog-search:focus-within {
+  background-color: hsla(0, 0%, 99%, 0.4);
+  box-shadow: 0 0 0 2px hsla(0, 0%, 99%, 0.8);
 }
 
 .user-info {
@@ -67,6 +69,21 @@
   border-radius: 50%;
 }
 
+.drawer-toggler svg,
 .user-info svg {
   margin: 8px;
+}
+
+.drawer-toggler,
+.blog-search button[type="submit"],
+.user-info {
+  outline: 1px solid transparent;
+  border: none;
+  border-left: 2px solid transparent;
+}
+
+.drawer-toggler:focus,
+.blog-search button[type="submit"]:focus,
+.user-info:focus {
+  border-color: hsla(0, 0%, 99%, 0.8);
 }

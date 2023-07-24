@@ -14,8 +14,12 @@ const getToken = (req) => {
   return null;
 };
 
-BlogsRouter.get("/", async function (_req, res) {
-  const blogs = await Blog.find({}).populate("author", {
+BlogsRouter.get("/", async function (req, res) {
+  const { search } = req.query;
+  let query = {};
+  if (search) query.title = { $regex: new RegExp(search, "i") };
+
+  const blogs = await Blog.find(query).populate("author", {
     name: 1,
     alias: 1,
     email: 1,

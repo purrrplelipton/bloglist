@@ -21,7 +21,10 @@ mongoose
 
 app.use(cors());
 app.use(express.static("dist"));
-app.use(express.json());
+const bodyParserOptions = {
+  limit: "50mb",
+};
+app.use(express.json(bodyParserOptions));
 app.use(express.urlencoded({ extended: false }));
 app.use(ReqLog);
 

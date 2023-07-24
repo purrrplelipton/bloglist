@@ -17,7 +17,7 @@ import styles from "./blog.module.css";
 
 const Blog = ({ blog }) => {
   let userId = null;
-  const bloggerzon = localStorage.getItem("bloglist");
+  const bloggerzon = localStorage.getItem("bloggerzon");
   if (bloggerzon) userId = JSON.parse(bloggerzon).id;
 
   const { dispatch } = useContext(AppContext);
@@ -168,6 +168,7 @@ const Blog = ({ blog }) => {
                 : "add to favoriites"
             }
             onClick={handleFaveToggle}
+            type="button"
           >
             {homeStates.faves.includes(blog.id) ? <HeartFilled /> : <Heart />}
           </button>

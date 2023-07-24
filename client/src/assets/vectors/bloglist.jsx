@@ -1,4 +1,6 @@
-export const BloglistSVG = () => (
+import React from "react";
+
+export const BloggerzonSVG = () => (
   <svg
     height="256px"
     width="256px"

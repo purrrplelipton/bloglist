@@ -1,11 +1,3 @@
-:has(.sign-up-form) {
-  height: 100%;
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: center;
-  align-items: center;
-}
-
 .sign-up-form {
   padding: 2em 1em;
   background-color: #fff;

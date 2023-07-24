@@ -1,10 +1,11 @@
 import { Photo } from "@assets/vectors/tabler-icons";
 import { Input } from "@components/input";
-import { Modal } from "@components/modal";
+import { Backdrop } from "@components/backdrop";
 import { Spinner } from "@components/spinner";
 import { AppContext } from "@contexts/";
 import { addBlog } from "@services/blog.js";
 import DOMPurify from "dompurify";
+import { motion } from "framer-motion";
 import React, { useContext, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { HomeContext } from "../home";
@@ -63,10 +64,36 @@ const BlogForm = () => {
     reader.readAsDataURL(file);
   }
 
+  const blogFormVariants = {
+    hidden: {
+      y: "100%",
+      opacity: 0,
+    },
+    visible: {
+      y: "0",
+      opacity: 1,
+      transition: {
+        damping: 25,
+        stiffness: 200,
+      },
+    },
+    exit: {
+      y: "100%",
+      opacity: 0,
+    },
+  };
+
   return (
-    <Modal isOpen={formIsOpen} onClose={closeForm}>
-      <div className={styles.formWrapper}>
+    <Backdrop isOpen={formIsOpen} onClose={closeForm}>
+      <motion.div
+        className={styles.formWrapper}
+        variants={blogFormVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+      >
         <form
+          onClick={(e) => e.stopPropagation()}
           action="/upload-blog"
           method="POST"
           encType="multipart/form-data"
@@ -121,8 +148,8 @@ const BlogForm = () => {
             {uploading ? <Spinner width={18} /> : "upload"}
           </button>
         </form>
-      </div>
-    </Modal>
+      </motion.div>
+    </Backdrop>
   );
 };
 

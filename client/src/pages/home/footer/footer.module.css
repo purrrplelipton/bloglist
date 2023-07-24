@@ -13,7 +13,8 @@
   background-color: #fff;
   color: inherit;
   border: none;
-  padding: 0;
+  outline: 1px solid transparent;
+  padding: 8px;
   margin: 1em;
   border-radius: 50%;
   position: relative;
@@ -46,7 +47,7 @@
   right: 0;
   background-color: inherit;
   transform: translate3d(0, 0, 0);
-  border-radius: inherit;
+  border-radius: 50%;
 }
 
 .toolbar button::before {
@@ -58,7 +59,6 @@
 }
 
 .toolbar button svg {
-  margin: 8px;
   width: 3em;
   height: 3em;
 }

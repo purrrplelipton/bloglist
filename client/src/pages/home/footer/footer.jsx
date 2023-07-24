@@ -1,4 +1,5 @@
 import { Plus } from "@assets/vectors/tabler-icons";
+import { motion } from "framer-motion";
 import React, { useContext } from "react";
 import { HomeContext } from "../home";
 import styles from "./footer.module.css";
@@ -7,7 +8,11 @@ const Footer = () => {
   const { homeDispatch } = useContext(HomeContext);
 
   return (
-    <footer className={styles.toolbar}>
+    <motion.footer
+      className={styles.toolbar}
+      whileTap={{ scale: 0.9 }}
+      whileHover={{ scale: 1.1 }}
+    >
       <button
         aria-label="create blog"
         type="button"
@@ -15,7 +20,7 @@ const Footer = () => {
       >
         <Plus />
       </button>
-    </footer>
+    </motion.footer>
   );
 };
 

@@ -8,9 +8,9 @@ export async function signIn(credentials) {
 }
 
 export function isAllowed() {
-  return localStorage.getItem("bloglist") !== null;
+  return localStorage.getItem("bloggerzon") !== null;
 }
 
 export async function signOut() {
-  localStorage.removeItem("bloglist");
+  localStorage.removeItem("bloggerzon");
 }

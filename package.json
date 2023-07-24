@@ -1,5 +1,5 @@
 {
-  "name": "bloglist",
+  "name": "bloggerzon",
   "version": "1.0.0",
   "author": {
     "name": "Emmanuel O. Adeyeye"
@@ -14,7 +14,7 @@
     "client:dev": "cd client && yarn dev",
     "server": "cd server && yarn start",
     "client": "cd client && yarn start",
-    "build": "cd client && rimraf dist && yarn build && cd ../server && rimraf dist && cd ../client && mv dist ../server"
+    "build": "cd client && npx rimraf dist && yarn build && cd ../server && npx rimraf dist && cd ../client && mv dist ../server"
   },
   "dependencies": {
     "concurrently": "^8.2.0",

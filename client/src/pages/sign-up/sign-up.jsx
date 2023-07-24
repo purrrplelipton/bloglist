@@ -2,8 +2,9 @@ import { Eye, EyeOff, Square, SquareCheck } from "@assets/vectors/tabler-icons";
 import { Spinner } from "@components/spinner";
 import { AppContext } from "@contexts/";
 import { createUser } from "@services/user.js";
+import { motion } from "framer-motion";
 import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import styles from "./sign-up.module.css";
 
@@ -14,6 +15,7 @@ const initialUser = {
 };
 
 const SignUp = () => {
+  const navigate = useNavigate();
   const { dispatch } = useContext(AppContext);
   const [user, setUser] = useState(initialUser);
 
@@ -23,25 +25,54 @@ const SignUp = () => {
     creating: false,
   });
 
-  async function submitDetails(event) {
+  function submitDetails(event) {
     setFormStates((prv) => ({ ...prv, creating: true }));
     event.preventDefault();
 
-    try {
-      await createUser(user);
-      setUser(initialUser);
-    } catch ({ message }) {
-      dispatch((prv) => ({
-        ...prv,
-        notifs: prv.notifs.concat({ message, color: "error", id: uuidv4() }),
-      }));
-    }
-
-    setFormStates((prv) => ({ ...prv, creating: false }));
+    createUser(user)
+      .then(() => {
+        setUser(initialUser);
+        dispatch((prv) => ({
+          ...prv,
+          notifs: prv.notifs.concat({
+            message: "Account created successfully",
+            color: "success",
+            id: uuidv4(),
+          }),
+        }));
+        navigate("/", { replace: true });
+      })
+      .catch(({ message }) =>
+        dispatch((prv) => ({
+          ...prv,
+          notifs: prv.notifs.concat({ message, color: "error", id: uuidv4() }),
+        }))
+      )
+      .finally(() => setFormStates((prv) => ({ ...prv, creating: false })));
   }
 
+  const signUpVariants = {
+    hidden: {
+      x: "100%",
+      opacity: 0,
+    },
+    visible: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: {
+      x: "-100%",
+      opacity: 0,
+    },
+  };
+
   return (
-    <>
+    <motion.main
+      variants={signUpVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+    >
       <form
         className={styles.signUpForm}
         action="/sign-up"
@@ -150,7 +181,7 @@ const SignUp = () => {
       <p className={styles.signInRedirect}>
         Already have an account? <Link to="/sign-in">Sign In</Link>
       </p>
-    </>
+    </motion.main>
   );
 };
 
