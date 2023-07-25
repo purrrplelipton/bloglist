@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { Blog } from "./blog";
 import { BlogForm } from "./blog-form";
+import { Drawer } from "./drawer";
 import { Footer } from "./footer";
 import { Header } from "./header";
 import styles from "./home.module.css";
@@ -90,6 +91,7 @@ const Home = () => {
           exit="exit"
         >
           <Header />
+          <Drawer />
           <section className={styles.blogs} aria-live="polite">
             {fetching ? (
               <Spinner text={"Please wait"} width={40} />
