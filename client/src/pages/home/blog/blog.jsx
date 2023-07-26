@@ -1,4 +1,5 @@
 import {
+  DotsVertical,
   Heart,
   HeartFilled,
   ThumbDown,
@@ -11,9 +12,10 @@ import { HomeContext } from "@pages/home/home";
 import { updateBlog } from "@services/blog.js";
 import { updateUser } from "@services/user.js";
 import PropTypes from "prop-types";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import styles from "./blog.module.css";
+import { Options } from "./more-options";
 
 const Blog = ({ blog }) => {
   let userId = null;
@@ -22,6 +24,7 @@ const Blog = ({ blog }) => {
 
   const { dispatch } = useContext(AppContext);
   const { homeStates, homeDispatch } = useContext(HomeContext);
+  const [showOptions, setShowOptions] = useState(false);
 
   async function handleFaveToggle() {
     try {
@@ -172,6 +175,21 @@ const Blog = ({ blog }) => {
           >
             {homeStates.faves.includes(blog.id) ? <HeartFilled /> : <Heart />}
           </button>
+        </div>
+        <div className={styles.moreOptionsWrapper}>
+          <button
+            type="button"
+            aria-label="Show more options"
+            onClick={() => setShowOptions((prv) => !prv)}
+            className={styles.moreOptionsToggle}
+          >
+            <DotsVertical />
+          </button>
+          <Options
+            isOpen={showOptions}
+            blogId={blog.id}
+            authorId={blog.author.id}
+          />
         </div>
         {blog.thumbnail && (
           <img

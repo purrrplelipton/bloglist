@@ -2,7 +2,6 @@
   min-width: 320px;
   background-color: #fff;
   color: #333333;
-  /* --line-clr: #ebf0f3; */
   border-radius: 8px;
   border: 2px solid hsl(0, 0%, 40%);
   padding: 8px;
@@ -13,23 +12,10 @@
 }
 
 .blog-title {
-  position: relative;
-  z-index: 0;
   border-radius: 4px;
   overflow: hidden;
   text-align: center;
-}
-
-.blog-title::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background-color: #ebf0f3;
-  z-index: -1;
-  opacity: 0.5;
+  background-color: hsla(0, 0%, 0%, 0.05);
 }
 
 .blog-doohickeys {
@@ -47,7 +33,25 @@
 .fave-toggle-btn button {
   border: none;
   color: hsla(0, 0%, 99%);
-  background-color: hsla(0, 0%, 0%, 0.1);
+  background-color: rgba(0 0 0 / 0.1);
+  padding: 8px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
+.more-options-wrapper {
+  position: absolute;
+  padding: 8px;
+  border-top-right-radius: 8px;
+  top: 0;
+  right: 0;
+}
+
+.more-options-toggle {
+  border: none;
+  color: #fff;
+  background-color: rgba(0 0 0 / 0.1);
   padding: 8px;
   border-radius: 50%;
   display: grid;

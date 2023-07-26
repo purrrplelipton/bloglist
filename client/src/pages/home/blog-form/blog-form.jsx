@@ -1,6 +1,6 @@
 import { Photo } from "@assets/vectors/tabler-icons";
-import { Input } from "@components/input";
 import { Backdrop } from "@components/backdrop";
+import { Input } from "@components/input";
 import { Spinner } from "@components/spinner";
 import { AppContext } from "@contexts/";
 import { addBlog } from "@services/blog.js";
@@ -72,10 +72,6 @@ const BlogForm = () => {
     visible: {
       y: "0",
       opacity: 1,
-      transition: {
-        damping: 25,
-        stiffness: 200,
-      },
     },
     exit: {
       y: "100%",

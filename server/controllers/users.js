@@ -5,16 +5,10 @@ import { User } from "../models/user.js";
 import { SECRET } from "../utils/config.js";
 const { verify } = pkg;
 
-const getToken = (req) => {
-  const token = req.headers.authorization;
-  if (token && /^Bearer\s/.test(token)) return token.replace(/^Bearer\s/, "");
-  return null;
-};
-
 const UsersRouter = Router();
 
 UsersRouter.get("/", async (req, res) => {
-  const { id } = verify(getToken(req), SECRET);
+  const { id } = verify(req.token, SECRET);
   if (id) {
     const user = await User.findById(id);
     if (user) res.json(user);
@@ -29,7 +23,7 @@ UsersRouter.post("/", async (req, res) => {
 });
 
 UsersRouter.patch("/", async (req, res) => {
-  const { id } = verify(getToken(req), SECRET);
+  const { id } = verify(req.token, SECRET);
   if (id) {
     const updatedUser = await User.findByIdAndUpdate(
       id,

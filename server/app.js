@@ -5,7 +5,12 @@ import BlogsRouter from "./controllers/blogs.js";
 import SignInsRouter from "./controllers/sign-ins.js";
 import UsersRouter from "./controllers/users.js";
 import { MONGODB_URI } from "./utils/config.js";
-import { ErrHandler, ReqLog, UnknownEndpoint } from "./utils/middleware.js";
+import {
+  ErrHandler,
+  ReqLog,
+  UnknownEndpoint,
+  tokenExtractor,
+} from "./utils/middleware.js";
 
 const app = express();
 
@@ -22,11 +27,12 @@ mongoose
 app.use(cors());
 app.use(express.static("dist"));
 const bodyParserOptions = {
-  limit: "50mb",
+  limit: "10MB",
 };
 app.use(express.json(bodyParserOptions));
 app.use(express.urlencoded({ extended: false }));
 app.use(ReqLog);
+app.use(tokenExtractor);
 
 app.use("/api/blogs", BlogsRouter);
 app.use("/api/users", UsersRouter);

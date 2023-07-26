@@ -3,16 +3,11 @@ import pkg from "jsonwebtoken";
 import { Blog } from "../models/blog.js";
 import { User } from "../models/user.js";
 import { SECRET } from "../utils/config.js";
+import { userExtractor } from "../utils/middleware.js";
 
 const { verify } = pkg;
 
 const BlogsRouter = Router();
-
-const getToken = (req) => {
-  const token = req.headers.authorization;
-  if (token && /^Bearer\s/.test(token)) return token.replace(/^Bearer\s/, "");
-  return null;
-};
 
 BlogsRouter.get("/", async function (req, res) {
   const { search } = req.query;
@@ -33,7 +28,7 @@ BlogsRouter.get("/:id", async function (req, res) {
 });
 
 BlogsRouter.post("/", async function (req, res) {
-  const { id } = verify(getToken(req), SECRET);
+  const { id } = verify(req.token, SECRET);
   if (id) {
     const user = await User.findById(id);
 
@@ -45,14 +40,12 @@ BlogsRouter.post("/", async function (req, res) {
 
     return res.json(savedBlog);
   }
-
-  return res.status(401).json({ error: "token invalid" });
 });
 
 BlogsRouter.patch("/:id", async function (req, res) {
   const blogId = req.params.id,
     { userId, updatedProps } = req.body,
-    { id } = verify(getToken(req), SECRET);
+    { id } = verify(req.token, SECRET);
 
   if (id && id === userId) {
     const user = await User.findById(id);
@@ -79,9 +72,14 @@ BlogsRouter.patch("/:id", async function (req, res) {
   return res.status(401).json({ error: "token and id mismatch" });
 });
 
-BlogsRouter.delete("/:id", async function (req, res) {
-  await Blog.findByIdAndDelete(req.params.id);
-  res.status(204).end();
+BlogsRouter.delete("/", userExtractor, async function (req, res) {
+  console.log("body:", req.body);
+  const blogToDelete = await Blog.findById(req.body.id);
+  console.log("user:", req.user);
+  // if (String(req.user._id) === String(blogToDelete.author._id)) {
+  //   await Blog.findByIdAndDelete(req.body.id);
+  //   res.status(204).end();
+  // }
 });
 
 export default BlogsRouter;

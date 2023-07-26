@@ -1,5 +1,5 @@
 import BloggerzonSVG from "@assets/vectors/bloggerzon-svg";
-import { HeartFilled, Home } from "@assets/vectors/tabler-icons";
+import { HeartFilled, Home, User } from "@assets/vectors/tabler-icons";
 import { Backdrop } from "@components/backdrop";
 import { motion } from "framer-motion";
 import React, { useContext } from "react";
@@ -22,6 +22,13 @@ const navigations = [
     id: uuidv4(),
     icon: <HeartFilled />,
     label: "Favorites",
+  },
+  {
+    href: "/my-blogs",
+    aria: "Link to my blogs",
+    id: uuidv4(),
+    icon: <User />,
+    label: "My blogs",
   },
 ];
 

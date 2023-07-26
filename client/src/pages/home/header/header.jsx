@@ -1,12 +1,15 @@
-import { Menu, Search, User } from "@assets/vectors/tabler-icons";
+import { Menu, Search, UserCircle, X } from "@assets/vectors/tabler-icons";
 import { Spinner } from "@components/spinner";
 import { AppContext } from "@contexts/";
 import { getBlogs } from "@services/blog.js";
-import React, { useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { HomeContext } from "../home";
 import styles from "./header.module.css";
+import { SearchSection } from "./search";
+
+export const HeaderContext = createContext(null);
 
 const Header = () => {
   const {
@@ -14,15 +17,30 @@ const Header = () => {
     homeDispatch,
   } = useContext(HomeContext);
   const { dispatch } = useContext(AppContext);
-  const [searching, setSearching] = useState(false);
+  const [headerStates, headerDispatch] = useState({
+    fetching: false,
+    queryResults: [],
+  });
+  const [searchDelay, setSearchDelay] = useState(null);
 
-  function handleBlogSearch(e) {
-    e.preventDefault();
-    setSearching(true);
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      if (searchDelay) clearTimeout(searchDelay);
+
+      const delayTimer = setTimeout(() => handleBlogSearch(), 750);
+
+      setSearchDelay(delayTimer);
+    }
+  }, [searchQuery]);
+
+  function handleBlogSearch() {
+    headerDispatch((prv) => ({ ...prv, fetching: true }));
 
     if (searchQuery.trim()) {
       getBlogs(searchQuery.trim())
-        .then((res) => console.log(res))
+        .then((blogs) =>
+          headerDispatch((prv) => ({ ...prv, queryResults: blogs }))
+        )
         .catch(({ message }) =>
           dispatch((prv) => ({
             ...prv,
@@ -33,12 +51,12 @@ const Header = () => {
             }),
           }))
         )
-        .finally(() => setSearching(false));
-    }
+        .finally(() => headerDispatch((prv) => ({ ...prv, fetching: false })));
+    } else headerDispatch((prv) => ({ ...prv, queryResults: [] }));
   }
 
   return (
-    <>
+    <HeaderContext.Provider value={{ headerStates, headerDispatch }}>
       <header className={styles.header}>
         <button
           type="button"
@@ -46,7 +64,7 @@ const Header = () => {
           onClick={() =>
             homeDispatch((prv) => ({ ...prv, drawerIsOpen: !prv.drawerIsOpen }))
           }
-          aria-label={drawerIsOpen ? "close side-drawer" : "open side-drawer"}
+          aria-label={drawerIsOpen ? "Close drawer" : "Open drawer"}
         >
           <Menu />
         </button>
@@ -60,25 +78,47 @@ const Header = () => {
             type="text"
             id="blog-search"
             value={searchQuery}
-            onChange={(e) =>
-              homeDispatch((prv) => ({ ...prv, searchQuery: e.target.value }))
-            }
+            onChange={(e) => {
+              const value = e.target.value;
+              homeDispatch((prv) => ({ ...prv, searchQuery: value }));
+              headerDispatch((prv) => ({
+                ...prv,
+                fetching: Boolean(value.trim()),
+              }));
+            }}
             placeholder="search"
           />
           <button
-            type="submit"
-            aria-label="search"
-            disabled={!searchQuery.trim() || searching}
-            onClick={() => {}}
+            type={searchQuery.trim() ? "reset" : "submit"}
+            aria-label={searchQuery.trim() ? "Clear search" : "Search"}
+            disabled={!searchQuery.trim() || headerStates.fetching}
+            onClick={(e) => {
+              e.preventDefault();
+              if (e.currentTarget.type === "reset") {
+                homeDispatch((prv) => ({ ...prv, searchQuery: "" }));
+                headerDispatch((prv) => ({
+                  ...prv,
+                  fetching: false,
+                  queryResults: [],
+                }));
+              }
+            }}
           >
-            {searching ? <Spinner width={24} /> : <Search />}
+            {headerStates.fetching ? (
+              <Spinner width={24} />
+            ) : searchQuery.trim() ? (
+              <X />
+            ) : (
+              <Search />
+            )}
           </button>
         </form>
         <Link aria-label="my account" to="/acc" className={styles.userInfo}>
-          <User />
+          <UserCircle />
         </Link>
       </header>
-    </>
+      <SearchSection />
+    </HeaderContext.Provider>
   );
 };
 

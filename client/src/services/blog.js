@@ -40,6 +40,17 @@ export async function updateBlog(id, payload) {
 }
 
 export async function deleteBlog(id) {
-  const { data } = await api.delete(`/${id}`);
-  return data;
+  const bloggerzonKey = localStorage.getItem("bloggerzon");
+
+  if (bloggerzonKey) {
+    const { token } = JSON.parse(bloggerzonKey);
+    const { data } = await api.delete(
+      "",
+      { id },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return data;
+  }
 }

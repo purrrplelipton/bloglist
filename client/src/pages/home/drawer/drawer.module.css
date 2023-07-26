@@ -7,7 +7,6 @@
   overflow: hidden;
   position: fixed;
   width: 280px;
-  z-index: 985;
 }
 
 .drawer-header {

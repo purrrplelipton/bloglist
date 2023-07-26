@@ -1,3 +1,9 @@
+import pkg from "jsonwebtoken";
+import { SECRET } from "./config.js";
+import { User } from "../models/user.js";
+
+const { verify } = pkg;
+
 export function ReqLog({ method, path, body }, _res, nxt) {
   const now = new Date();
 
@@ -15,7 +21,22 @@ export const UnknownEndpoint = (_req, res) =>
 
 export const tokenExtractor = (req, _res, nxt) => {
   const token = req.headers.authorization;
+  if (token && /^Bearer\s/.test(token))
+    req.token = token.replace(/^Bearer\s/, "");
 
+  nxt();
+};
+
+export const userExtractor = async (req, _res, nxt) => {
+  console.log("headers:", req.headers);
+  const token = req.headers.authorization;
+  console.log("token:", token);
+  if (token && /^Bearer\s/.test(token)) {
+    const { id } = verify(token, SECRET);
+    console.log("id:", id);
+    const user = await User.findById(id);
+    console.log("user:", user);
+  }
   nxt();
 };
 
