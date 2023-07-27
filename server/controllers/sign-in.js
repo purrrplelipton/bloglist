@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 import { compare } from "bcrypt";
 import { Router } from "express";
 import pkg from "jsonwebtoken";

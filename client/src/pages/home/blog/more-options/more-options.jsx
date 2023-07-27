@@ -1,15 +1,17 @@
-import { Trash } from "@assets/vectors/tabler-icons";
+import { Edit, Share, Trash } from "@assets/vectors/tabler-icons";
 import { AppContext } from "@contexts/";
+import { HomeContext } from "@pages/home";
+import { deleteBlog } from "@services/blog";
 import { AnimatePresence, motion } from "framer-motion";
 import PropTypes from "prop-types";
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { deleteBlog } from "../../../../services/blog";
 import styles from "./more-options.module.css";
 
-const Options = ({ isOpen, blogId, authorId }) => {
+const Options = ({ isOpen, toggle, blogId, authorId }) => {
   const { dispatch } = useContext(AppContext);
+  const { homeDispatch } = useContext(HomeContext);
   const [isAuthor, setIsAuthor] = useState(false);
 
   useEffect(() => {
@@ -25,9 +27,13 @@ const Options = ({ isOpen, blogId, authorId }) => {
   }, []);
 
   function handleBlogDeletion() {
+    toggle(false);
     deleteBlog(blogId)
-      .then((response) => {
-        console.log(response);
+      .then(() => {
+        homeDispatch((prv) => ({
+          ...prv,
+          blogs: prv.blogs.filter((blog) => blog.id !== blogId),
+        }));
         dispatch((prv) => ({
           ...prv,
           notifs: prv.notifs.concat({
@@ -49,6 +55,30 @@ const Options = ({ isOpen, blogId, authorId }) => {
       );
   }
 
+  const options = {
+    general: [
+      {
+        id: uuidv4(),
+        clickFunc: function () {},
+        icon: <Share />,
+        label: "Share",
+      },
+    ],
+    protected: [
+      {
+        id: uuidv4(),
+        clickFunc: function () {},
+        icon: <Edit />,
+        label: "Edit",
+      },
+      {
+        id: uuidv4(),
+        clickFunc: handleBlogDeletion,
+        icon: <Trash />,
+        label: "Delete",
+      },
+    ],
+  };
   const optionsVariants = {
     initial: { opacity: 0, scale: 1.5, pointerEvents: "none" },
     visible: { opacity: 1, scale: 1, pointerEvents: "auto" },
@@ -67,17 +97,31 @@ const Options = ({ isOpen, blogId, authorId }) => {
             className={styles.optionsWrapper}
             role="combobox"
           >
-            {isAuthor && (
+            {options.general.map(({ id, clickFunc, icon, label }) => (
               <button
+                key={id}
                 role="option"
                 className={styles.option}
                 type="button"
-                onClick={() => handleBlogDeletion()}
+                onClick={clickFunc}
               >
-                <Trash />
-                <span>Delete blog</span>
+                {icon}
+                <span>{label}</span>
               </button>
-            )}
+            ))}
+            {isAuthor &&
+              options.protected.map(({ id, clickFunc, icon, label }) => (
+                <button
+                  key={id}
+                  role="option"
+                  className={styles.option}
+                  type="button"
+                  onClick={clickFunc}
+                >
+                  {icon}
+                  <span>{label}</span>
+                </button>
+              ))}
           </motion.div>
         )}
       </AnimatePresence>
@@ -87,7 +131,8 @@ const Options = ({ isOpen, blogId, authorId }) => {
 
 Options.propTypes = {
   isOpen: PropTypes.bool.isRequired,
-  authorId: PropTypes.string,
+  toggle: PropTypes.func.isRequired,
+  authorId: PropTypes.string.isRequired,
   blogId: PropTypes.string.isRequired,
 };
 

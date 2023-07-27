@@ -11,7 +11,7 @@
   "jest": {
     "testEnvironment": "node",
     "transform": {
-      "^.+\\[jt]sx?$": "babel-jest"
+      "^.+\\[jt]s$": "babel-jest"
     },
     "globalTeardown": "./tests/teardown.js"
   },
@@ -28,7 +28,8 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.1",
     "mongoose": "^7.3.4",
-    "mongoose-unique-validator": "^4.0.0"
+    "mongoose-unique-validator": "^4.0.0",
+    "morgan": "^1.10.0"
   },
   "license": "MIT",
   "devDependencies": {
@@ -40,6 +41,6 @@
     "supertest": "^6.3.3"
   },
   "engines": {
-    "node": ">=18.16.1"
+    "node": ">=18.17.0"
   }
 }

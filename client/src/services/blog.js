@@ -27,12 +27,12 @@ export async function addBlog(blog) {
   }
 }
 
-export async function updateBlog(id, payload) {
+export async function updateBlog(id, update) {
   const bloggerzonKey = localStorage.getItem("bloggerzon");
 
   if (bloggerzonKey) {
     const { token } = JSON.parse(bloggerzonKey);
-    const { data } = await api.patch(`/${id}`, payload, {
+    const { data } = await api.patch(`/${id}`, update, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return data;
@@ -44,13 +44,9 @@ export async function deleteBlog(id) {
 
   if (bloggerzonKey) {
     const { token } = JSON.parse(bloggerzonKey);
-    const { data } = await api.delete(
-      "",
-      { id },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+    const { data } = await api.delete(`/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     return data;
   }
 }

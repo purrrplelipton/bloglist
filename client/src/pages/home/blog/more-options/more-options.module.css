@@ -2,9 +2,9 @@
   position: absolute;
   top: 100%;
   right: 0;
-  min-width: 144px;
-  padding: 4px 0;
-  border-radius: 2px;
+  min-width: 120px;
+  padding: 6px 0;
+  border-radius: 4px;
   background-color: #ffce54;
 }
 
@@ -23,7 +23,7 @@
 }
 
 .option span {
-  padding-left: 0.5em;
+  padding-left: 0.25em;
 }
 
 .option:hover {

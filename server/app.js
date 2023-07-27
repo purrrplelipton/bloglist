@@ -1,40 +1,45 @@
 import cors from "cors";
 import express from "express";
 import mongoose from "mongoose";
-import BlogsRouter from "./controllers/blogs.js";
-import SignInsRouter from "./controllers/sign-ins.js";
-import UsersRouter from "./controllers/users.js";
+import morgan from "morgan";
+import BlogsRouter from "./controllers/blog.js";
+import SignInsRouter from "./controllers/sign-in.js";
+import UsersRouter from "./controllers/user.js";
 import { MONGODB_URI } from "./utils/config.js";
 import {
   ErrHandler,
-  ReqLog,
-  UnknownEndpoint,
   tokenExtractor,
+  UnknownEndpoint,
+  userExtractor,
 } from "./utils/middleware.js";
+
+(async function connect() {
+  console.log("connecting to MongoDB...");
+  try {
+    await mongoose.connect(MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("connected to MongoDB");
+  } catch (exception) {
+    console.error("error connecting to MongoDB:", exception);
+  }
+})();
+
+mongoose.set("strictQuery", true);
+mongoose.set("runValidators", true);
 
 const app = express();
 
-console.log("connecting to MongoDB...");
-
-mongoose
-  .set("strictQuery", true)
-  .connect(MONGODB_URI)
-  .then(() => console.log("connected to MongoDB"))
-  .catch(({ message }) =>
-    console.error("error connecting to MongoDB:", message)
-  );
-
 app.use(cors());
 app.use(express.static("dist"));
-const bodyParserOptions = {
-  limit: "10MB",
-};
-app.use(express.json(bodyParserOptions));
+app.use(express.json({ limit: "10MB" }));
 app.use(express.urlencoded({ extended: false }));
-app.use(ReqLog);
+app.use(morgan("tiny"));
+
 app.use(tokenExtractor);
 
-app.use("/api/blogs", BlogsRouter);
+app.use("/api/blogs", userExtractor, BlogsRouter);
 app.use("/api/users", UsersRouter);
 app.use("/api/sign-in", SignInsRouter);
 

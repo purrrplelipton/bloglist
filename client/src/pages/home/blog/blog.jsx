@@ -12,15 +12,25 @@ import { HomeContext } from "@pages/home/home";
 import { updateBlog } from "@services/blog.js";
 import { updateUser } from "@services/user.js";
 import PropTypes from "prop-types";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import styles from "./blog.module.css";
 import { Options } from "./more-options";
 
 const Blog = ({ blog }) => {
-  let userId = null;
-  const bloggerzon = localStorage.getItem("bloggerzon");
-  if (bloggerzon) userId = JSON.parse(bloggerzon).id;
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const bloggerzon = localStorage.getItem("bloggerzon");
+    if (bloggerzon) {
+      const { id } = JSON.parse(bloggerzon);
+      setUserId(id);
+    } else {
+      const navigate = useNavigate();
+      navigate("/", { replace: true });
+    }
+  }, []);
 
   const { dispatch } = useContext(AppContext);
   const { homeStates, homeDispatch } = useContext(HomeContext);
@@ -55,8 +65,7 @@ const Blog = ({ blog }) => {
   function handleLikeToggle() {
     if (blog.likes.includes(userId)) {
       updateBlog(blog.id, {
-        userId,
-        updatedProps: { likes: blog.likes.filter((like) => like !== userId) },
+        likes: blog.likes.filter((like) => like !== userId),
       })
         .then(({ likes }) =>
           homeDispatch((prv) => ({
@@ -80,10 +89,7 @@ const Blog = ({ blog }) => {
       const updatedProps = { likes: [...blog.likes, userId] };
       if (blog.dislikes.includes(userId))
         updatedProps.dislikes = blog.dislikes.filter((id) => id !== userId);
-      updateBlog(blog.id, {
-        userId,
-        updatedProps,
-      })
+      updateBlog(blog.id, updatedProps)
         .then(({ likes, dislikes }) =>
           homeDispatch((prv) => ({
             ...prv,
@@ -109,10 +115,7 @@ const Blog = ({ blog }) => {
     if (blog.dislikes.includes(userId)) {
       try {
         const { dislikes } = await updateBlog(blog.id, {
-          userId,
-          updatedProps: {
-            dislikes: blog.dislikes.filter((dislike) => dislike !== userId),
-          },
+          dislikes: blog.dislikes.filter((dislike) => dislike !== userId),
         });
         homeDispatch((prv) => ({
           ...prv,
@@ -134,10 +137,7 @@ const Blog = ({ blog }) => {
       const updatedProps = { dislikes: [...blog.dislikes, userId] };
       if (blog.likes.includes(userId))
         updatedProps.likes = blog.likes.filter((id) => id !== userId);
-      updateBlog(blog.id, {
-        userId,
-        updatedProps,
-      })
+      updateBlog(blog.id, updatedProps)
         .then(({ likes, dislikes }) =>
           homeDispatch((prv) => ({
             ...prv,
@@ -187,17 +187,16 @@ const Blog = ({ blog }) => {
           </button>
           <Options
             isOpen={showOptions}
+            toggle={setShowOptions}
             blogId={blog.id}
             authorId={blog.author.id}
           />
         </div>
-        {blog.thumbnail && (
-          <img
-            className={styles.blogThumbnail}
-            src={blog.thumbnail}
-            alt={`thumbnail for blog titled: ${blog.title}`}
-          />
-        )}
+        <img
+          className={styles.blogThumbnail}
+          src={blog.thumbnail}
+          alt={`thumbnail for blog titled: ${blog.title}`}
+        />
         <div className={styles.btnWrapper}>
           <button
             type="button"
