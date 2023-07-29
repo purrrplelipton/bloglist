@@ -1,36 +1,36 @@
 import { Router } from "express";
-import { Blog } from "../models/blog.js";
-import { User } from "../models/user.js";
+import { Blog as blg } from "../models/blog.js";
+import { User as usr } from "../models/user.js";
 
-const BlogsRouter = Router();
+const blog = Router();
 
-BlogsRouter.get("/", async function (req, res) {
-  const user = await User.findById(req.user);
+blog.get("/", async function (req, res) {
+  const user = await usr.findById(req.user);
   if (user) {
     const { search } = req.query;
     let query = {};
     if (search) query.title = { $regex: new RegExp(search, "i") };
-    const blogs = await Blog.find(query).populate("author", {
-      name: 1,
-      alias: 1,
-      email: 1,
-    });
+    const blogs = await blg
+      .find(query)
+      .sort({ createdAt: -1 })
+      .populate("author", { alias: 1 });
+
     res.json(blogs);
   }
 });
 
-BlogsRouter.get("/:id", async function (req, res) {
-  const user = await User.findById(req.user);
+blog.get("/:id", async function (req, res) {
+  const user = await usr.findById(req.user);
   if (user) {
-    const blog = await Blog.findById(req.params.id);
+    const blog = await blg.findById(req.params.id);
     res.json(blog);
   }
 });
 
-BlogsRouter.post("/", async function (req, res) {
-  const user = await User.findById(req.user);
+blog.post("/", async function (req, res) {
+  const user = await usr.findById(req.user);
   if (user) {
-    const blog = new Blog({ ...req.body, author: user._id });
+    const blog = new blg({ ...req.body, author: user._id });
     const savedBlog = await blog.save();
     user.blogs = user.blogs.concat(savedBlog._id);
     await user.save();
@@ -38,12 +38,12 @@ BlogsRouter.post("/", async function (req, res) {
   }
 });
 
-BlogsRouter.patch("/:id", async function (req, res) {
-  const user = await User.findById(req.user);
+blog.patch("/:id", async function (req, res) {
+  const user = await usr.findById(req.user);
   if (user) {
-    const blog = await Blog.findById(req.params.id);
+    const blog = await blg.findById(req.params.id);
     if (blog) {
-      const updatedBlog = await Blog.findByIdAndUpdate(
+      const updatedBlog = await blg.findByIdAndUpdate(
         req.params.id,
         { ...req.body },
         {
@@ -57,17 +57,17 @@ BlogsRouter.patch("/:id", async function (req, res) {
   }
 });
 
-BlogsRouter.delete("/:id", async function (req, res) {
-  const user = await User.findById(req.user);
+blog.delete("/:id", async function (req, res) {
+  const user = await usr.findById(req.user);
   if (user) {
-    const blog = await Blog.findById(req.params.id);
+    const blog = await blg.findById(req.params.id);
     if (blog) {
       if (String(user._id) === String(blog.author)) {
-        await Blog.findByIdAndDelete(blog.id);
+        await blg.findByIdAndDelete(blog.id);
         res.status(204).end();
       }
     }
   }
 });
 
-export default BlogsRouter;
+export default blog;

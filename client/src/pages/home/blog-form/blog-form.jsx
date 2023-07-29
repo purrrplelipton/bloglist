@@ -1,15 +1,16 @@
 import { Photo } from "@assets/vectors/tabler-icons";
 import { Backdrop } from "@components/backdrop";
-import { Input } from "@components/input";
 import { Spinner } from "@components/spinner";
 import { AppContext } from "@contexts/";
-import { addBlog } from "@services/blog.js";
+import services from "@services/";
 import DOMPurify from "dompurify";
 import { motion } from "framer-motion";
 import React, { useContext, useState } from "react";
+import { useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { HomeContext } from "../home";
+import { HomeContext } from "../";
 import styles from "./blog-form.module.css";
+import { Input } from "./input";
 
 const defaultBlog = { title: "", content: "", thumbnail: null };
 
@@ -21,18 +22,22 @@ const BlogForm = () => {
   } = useContext(HomeContext);
   const [blog, setBlog] = useState(defaultBlog);
   const [uploading, setUploading] = useState(false);
+  const titleRef = useRef();
+  const contentRef = useRef();
 
   function closeForm() {
-    homeDispatch((prv) => ({ ...prv, formIsOpen: false }));
+    return homeDispatch((prv) => ({ ...prv, formIsOpen: false }));
   }
 
   function uploadBlog(event) {
     event.preventDefault();
     setUploading(true);
 
-    addBlog(blog)
+    return services.blog
+      .post(blog)
       .then((savedBlog) => {
-        homeDispatch((prv) => ({ ...prv, blogs: [...prv.blogs, savedBlog] }));
+        console.log(savedBlog);
+        homeDispatch((prv) => ({ ...prv, blogs: [savedBlog, ...prv.blogs] }));
         dispatch((prv) => ({
           ...prv,
           notifs: prv.notifs.concat({
@@ -51,6 +56,7 @@ const BlogForm = () => {
       .finally(() => {
         setUploading(false);
         setBlog(defaultBlog);
+        homeDispatch((prv) => ({ ...prv, formIsOpen: false }));
       });
   }
 
@@ -61,7 +67,7 @@ const BlogForm = () => {
     reader.onload = (evt) =>
       setBlog((prv) => ({ ...prv, thumbnail: evt.target.result }));
 
-    reader.readAsDataURL(file);
+    return reader.readAsDataURL(file);
   }
 
   const blogFormVariants = {
@@ -98,6 +104,7 @@ const BlogForm = () => {
         >
           <div className={styles.fieldWrapper}>
             <Input
+              ref={titleRef}
               label="Title"
               placeholder="title"
               onInput={(value) => setBlog((prv) => ({ ...prv, title: value }))}
@@ -108,6 +115,7 @@ const BlogForm = () => {
             className={[styles.fieldWrapper, styles.contentWrapper].join(" ")}
           >
             <Input
+              ref={contentRef}
               label="Content"
               placeholder="content"
               onInput={(value) =>

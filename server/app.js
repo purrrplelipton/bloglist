@@ -2,9 +2,9 @@ import cors from "cors";
 import express from "express";
 import mongoose from "mongoose";
 import morgan from "morgan";
-import BlogsRouter from "./controllers/blog.js";
-import SignInsRouter from "./controllers/sign-in.js";
-import UsersRouter from "./controllers/user.js";
+import blog from "./controllers/blog.js";
+import signIn from "./controllers/sign-in.js";
+import user from "./controllers/user.js";
 import { MONGODB_URI } from "./utils/config.js";
 import {
   ErrHandler,
@@ -39,9 +39,9 @@ app.use(morgan("tiny"));
 
 app.use(tokenExtractor);
 
-app.use("/api/blogs", userExtractor, BlogsRouter);
-app.use("/api/users", UsersRouter);
-app.use("/api/sign-in", SignInsRouter);
+app.use("/api/blogs", userExtractor, blog);
+app.use("/api/users", user);
+app.use("/api/sign-in", signIn);
 
 app.use(UnknownEndpoint);
 app.use(ErrHandler);

@@ -8,37 +8,25 @@ import {
   ThumbUpFilled,
 } from "@assets/vectors/tabler-icons";
 import { AppContext } from "@contexts/";
-import { HomeContext } from "@pages/home/home";
-import { updateBlog } from "@services/blog.js";
-import { updateUser } from "@services/user.js";
+import { HomeContext } from "@pages/home";
+import services from "@services/";
 import PropTypes from "prop-types";
-import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import styles from "./blog.module.css";
 import { Options } from "./more-options";
 
 const Blog = ({ blog }) => {
-  const [userId, setUserId] = useState(null);
-
-  useEffect(() => {
-    const bloggerzon = localStorage.getItem("bloggerzon");
-    if (bloggerzon) {
-      const { id } = JSON.parse(bloggerzon);
-      setUserId(id);
-    } else {
-      const navigate = useNavigate();
-      navigate("/", { replace: true });
-    }
-  }, []);
-
-  const { dispatch } = useContext(AppContext);
+  const {
+    state: { user },
+    dispatch,
+  } = useContext(AppContext);
   const { homeStates, homeDispatch } = useContext(HomeContext);
   const [showOptions, setShowOptions] = useState(false);
 
   async function handleFaveToggle() {
     try {
-      const { favorites } = await updateUser({
+      const { favorites } = await services.user.patch({
         favorites: homeStates.faves.includes(blog.id)
           ? homeStates.faves.filter((blogId) => blogId !== blog.id)
           : [...homeStates.faves, blog.id],
@@ -63,10 +51,11 @@ const Blog = ({ blog }) => {
   }
 
   function handleLikeToggle() {
-    if (blog.likes.includes(userId)) {
-      updateBlog(blog.id, {
-        likes: blog.likes.filter((like) => like !== userId),
-      })
+    if (blog.likes.includes(user)) {
+      services.blog
+        .patch(blog.id, {
+          likes: blog.likes.filter((like) => like !== user),
+        })
         .then(({ likes }) =>
           homeDispatch((prv) => ({
             ...prv,
@@ -86,10 +75,11 @@ const Blog = ({ blog }) => {
           }))
         );
     } else {
-      const updatedProps = { likes: [...blog.likes, userId] };
-      if (blog.dislikes.includes(userId))
-        updatedProps.dislikes = blog.dislikes.filter((id) => id !== userId);
-      updateBlog(blog.id, updatedProps)
+      const updatedProps = { likes: [...blog.likes, user] };
+      if (blog.dislikes.includes(user))
+        updatedProps.dislikes = blog.dislikes.filter((id) => id !== user);
+      services.blog
+        .patch(blog.id, updatedProps)
         .then(({ likes, dislikes }) =>
           homeDispatch((prv) => ({
             ...prv,
@@ -112,10 +102,10 @@ const Blog = ({ blog }) => {
   }
 
   async function handleDislikeToggle() {
-    if (blog.dislikes.includes(userId)) {
+    if (blog.dislikes.includes(user)) {
       try {
-        const { dislikes } = await updateBlog(blog.id, {
-          dislikes: blog.dislikes.filter((dislike) => dislike !== userId),
+        const { dislikes } = await services.blog.patch(blog.id, {
+          dislikes: blog.dislikes.filter((dislike) => dislike !== user),
         });
         homeDispatch((prv) => ({
           ...prv,
@@ -134,10 +124,11 @@ const Blog = ({ blog }) => {
         }));
       }
     } else {
-      const updatedProps = { dislikes: [...blog.dislikes, userId] };
-      if (blog.likes.includes(userId))
-        updatedProps.likes = blog.likes.filter((id) => id !== userId);
-      updateBlog(blog.id, updatedProps)
+      const updatedProps = { dislikes: [...blog.dislikes, user] };
+      if (blog.likes.includes(user))
+        updatedProps.likes = blog.likes.filter((id) => id !== user);
+      services.blog
+        .patch(blog.id, updatedProps)
         .then(({ likes, dislikes }) =>
           homeDispatch((prv) => ({
             ...prv,
@@ -189,34 +180,32 @@ const Blog = ({ blog }) => {
             isOpen={showOptions}
             toggle={setShowOptions}
             blogId={blog.id}
-            authorId={blog.author.id}
+            authorId={blog.author.id || blog.author}
           />
         </div>
-        <img
-          className={styles.blogThumbnail}
-          src={blog.thumbnail}
-          alt={`thumbnail for blog titled: ${blog.title}`}
-        />
+        {blog.thumbnail && (
+          <img
+            className={styles.blogThumbnail}
+            src={blog.thumbnail}
+            alt={`thumbnail for blog titled: ${blog.title}`}
+          />
+        )}
         <div className={styles.btnWrapper}>
           <button
             type="button"
-            aria-label={blog.likes.includes(userId) ? "Unlike" : "Like"}
+            aria-label={blog.likes.includes(user) ? "Unlike" : "Like"}
             onClick={handleLikeToggle}
           >
-            {blog.likes.includes(userId) ? <ThumbUpFilled /> : <ThumbUp />}
+            {blog.likes.includes(user) ? <ThumbUpFilled /> : <ThumbUp />}
           </button>
           <button
             type="button"
             aria-label={
-              blog.dislikes.includes(userId) ? "Remove dislike" : "Disike"
+              blog.dislikes.includes(user) ? "Remove dislike" : "Disike"
             }
             onClick={handleDislikeToggle}
           >
-            {blog.dislikes.includes(userId) ? (
-              <ThumbDownFilled />
-            ) : (
-              <ThumbDown />
-            )}
+            {blog.dislikes.includes(user) ? <ThumbDownFilled /> : <ThumbDown />}
           </button>
         </div>
       </div>

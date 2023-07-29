@@ -7,7 +7,7 @@ import {
 } from "@assets/vectors/tabler-icons";
 import { Spinner } from "@components/spinner";
 import { AppContext } from "@contexts/";
-import { signIn } from "@services/auth.js";
+import services from "@services/";
 import { motion } from "framer-motion";
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -27,31 +27,30 @@ const SignIn = () => {
   const [formStates, setFormStates] = useState({ verifying: false });
   const [showPassword, setShowPassword] = useState(false);
 
-  function verifyDetails(event) {
+  async function verifyDetails(event) {
     setFormStates((prv) => ({ ...prv, verifying: true }));
     event.preventDefault();
 
-    signIn(user)
-      .then((res) => {
-        localStorage.setItem("bloggerzon", JSON.stringify(res));
-        setUser(initialUser);
-        dispatch((prv) => ({
-          ...prv,
-          notifs: prv.notifs.concat({
-            message: "Sign in successful",
-            color: "success",
-            id: uuidv4(),
-          }),
-        }));
-        navigate("/", { replace: true });
-      })
-      .catch(({ message }) =>
-        dispatch((prv) => ({
-          ...prv,
-          notifs: prv.notifs.concat({ message, color: "error", id: uuidv4() }),
-        }))
-      )
-      .finally(() => setFormStates((prv) => ({ ...prv, verifying: false })));
+    try {
+      const id = await services.verify(user);
+      dispatch((prv) => ({
+        ...prv,
+        user: id,
+        notifs: prv.notifs.concat({
+          message: "Sign in successful",
+          color: "success",
+          id: uuidv4(),
+        }),
+      }));
+      setUser(initialUser);
+      navigate("/", { replace: true });
+    } catch ({ message }) {
+      dispatch((prv) => ({
+        ...prv,
+        notifs: prv.notifs.concat({ message, color: "error", id: uuidv4() }),
+      }));
+      setFormStates((prv) => ({ ...prv, verifying: false }));
+    }
   }
 
   function signInWithGoogle() {}

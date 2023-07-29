@@ -24,4 +24,8 @@ export default defineConfig({
       },
     },
   },
+  optimizeDeps: {
+    include: ["@testing-library/jest-dom", "@testing-library/react", "ts-jest"],
+  },
+  build: { rollupOptions: { external: ["ts-jest"] } },
 });

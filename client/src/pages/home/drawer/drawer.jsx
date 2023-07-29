@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { HomeContext } from "../home";
+import { HomeContext } from "../";
 import styles from "./drawer.module.css";
 
 const navigations = [

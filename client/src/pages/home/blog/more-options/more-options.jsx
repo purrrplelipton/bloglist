@@ -1,34 +1,30 @@
 import { Edit, Share, Trash } from "@assets/vectors/tabler-icons";
 import { AppContext } from "@contexts/";
 import { HomeContext } from "@pages/home";
-import { deleteBlog } from "@services/blog";
+import services from "@services/";
 import { AnimatePresence, motion } from "framer-motion";
 import PropTypes from "prop-types";
 import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import styles from "./more-options.module.css";
 
 const Options = ({ isOpen, toggle, blogId, authorId }) => {
-  const { dispatch } = useContext(AppContext);
+  const {
+    state: { user },
+    dispatch,
+  } = useContext(AppContext);
   const { homeDispatch } = useContext(HomeContext);
   const [isAuthor, setIsAuthor] = useState(false);
 
   useEffect(() => {
-    const bloggerzon = localStorage.getItem("bloggerzon");
-    if (bloggerzon) {
-      const { id } = JSON.parse(bloggerzon);
-      if (id === authorId) setIsAuthor(true);
-    } else {
-      const navigate = useNavigate();
-      localStorage.removeItem("bloggerzon");
-      navigate("/", { replace: true });
-    }
-  }, []);
+    if (user === authorId) setIsAuthor(true);
+    else setIsAuthor(false);
+  }, [user, authorId]);
 
   function handleBlogDeletion() {
     toggle(false);
-    deleteBlog(blogId)
+    services.blog
+      .delete(blogId)
       .then(() => {
         homeDispatch((prv) => ({
           ...prv,

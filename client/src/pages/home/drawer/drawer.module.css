@@ -47,6 +47,7 @@
 
 .navlinks.current {
   background-color: #fff;
+  pointer-events: none;
 }
 
 .navlinks:hover {

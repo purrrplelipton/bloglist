@@ -2,17 +2,17 @@
 import { compare } from "bcrypt";
 import { Router } from "express";
 import pkg from "jsonwebtoken";
-import { User } from "../models/user.js";
+import { User as usr } from "../models/user.js";
 import { SECRET } from "../utils/config.js";
 
 const { sign } = pkg;
 
-const SignInsRouter = Router();
+const signIn = Router();
 
-SignInsRouter.post("/", async function (req, res) {
+signIn.post("/", async function (req, res) {
   const { email$alias, password, rememberMe } = req.body;
 
-  const user = await User.findOne({
+  const user = await usr.findOne({
     $or: [{ email: email$alias }, { alias: email$alias }],
   });
 
@@ -31,4 +31,4 @@ SignInsRouter.post("/", async function (req, res) {
     .json({ message: "Incorrect Email, Alias or Password." });
 });
 
-export default SignInsRouter;
+export default signIn;

@@ -3,6 +3,7 @@
   flex-flow: row nowrap;
   align-items: center;
   justify-content: space-between;
+  gap: 0.875em;
   position: fixed;
   top: 0;
   right: 0;
@@ -26,26 +27,26 @@
 }
 
 .blog-search {
-  display: inherit;
+  display: flex;
   flex-flow: row nowrap;
   align-items: center;
-  background-color: transparent;
   border-radius: 6px;
-  background-color: hsla(0, 0%, 99%, 0.2);
+  background-color: hsla(0, 0%, 100%, 0.25);
+  transform: translate(0, 0);
+  transition: transform 0.125s;
 }
 
 .blog-search button {
-  padding: 8px;
+  /* display: grid; */
+  /* place-items: center; */
   border-radius: 6px;
   background-color: transparent;
-}
-
-.blog-search button:focus {
-  background-color: hsla(0, 0%, 99%, 0.4);
+  /* min-width: 40px; */
 }
 
 .blog-search input {
   outline-width: 0;
+  outline: none;
   border: none;
   background: none;
   padding: 8px;
@@ -59,8 +60,9 @@
 }
 
 .blog-search:focus-within {
-  background-color: hsla(0, 0%, 99%, 0.4);
-  box-shadow: 0 0 0 2px hsla(0, 0%, 99%, 0.8);
+  background-color: hsla(0, 0%, 100%, 0.75);
+  box-shadow: 1px 3px 2px 0 hsla(0, 0%, 0%, 0.2);
+  transform: translate(-1px, -2px);
 }
 
 .user-info {
@@ -71,6 +73,7 @@
 }
 
 .drawer-toggler svg,
+.blog-search button,
 .user-info svg {
   margin: 8px;
 }
@@ -78,13 +81,11 @@
 .drawer-toggler,
 .blog-search button,
 .user-info {
-  outline: 1px solid transparent;
-  border: none;
-  border-left: 2px solid transparent;
+  border: 1px solid transparent;
 }
 
 .drawer-toggler:focus,
 .blog-search button:focus,
 .user-info:focus {
-  border-color: hsla(0, 0%, 99%, 0.8);
+  border-left-color: hsla(0, 0%, 99%, 0.8);
 }

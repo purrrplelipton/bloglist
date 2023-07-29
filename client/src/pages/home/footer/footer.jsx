@@ -1,7 +1,7 @@
 import { Plus } from "@assets/vectors/tabler-icons";
 import { motion } from "framer-motion";
 import React, { useContext } from "react";
-import { HomeContext } from "../home";
+import { HomeContext } from "../";
 import styles from "./footer.module.css";
 
 const Footer = () => {

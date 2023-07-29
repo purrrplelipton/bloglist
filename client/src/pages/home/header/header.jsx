@@ -1,15 +1,14 @@
 import { Menu, Search, UserCircle, X } from "@assets/vectors/tabler-icons";
 import { Spinner } from "@components/spinner";
 import { AppContext } from "@contexts/";
-import { getBlogs } from "@services/blog.js";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { HomeContext } from "../home";
+import services from "@services/";
+import { HomeContext } from "../";
 import styles from "./header.module.css";
 import { SearchSection } from "./search";
-
-export const HeaderContext = createContext(null);
+import { HeaderContext } from "./";
 
 const Header = () => {
   const {
@@ -27,7 +26,7 @@ const Header = () => {
     if (searchQuery.trim()) {
       if (searchDelay) clearTimeout(searchDelay);
 
-      const delayTimer = setTimeout(() => handleBlogSearch(), 750);
+      const delayTimer = setTimeout(() => handleBlogSearch(), 500);
 
       setSearchDelay(delayTimer);
     }
@@ -37,7 +36,8 @@ const Header = () => {
     headerDispatch((prv) => ({ ...prv, fetching: true }));
 
     if (searchQuery.trim()) {
-      getBlogs(searchQuery.trim())
+      services.blog
+        .get("search", searchQuery.trim())
         .then((blogs) =>
           headerDispatch((prv) => ({ ...prv, queryResults: blogs }))
         )

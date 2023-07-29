@@ -4,7 +4,7 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
 import { Notif } from "./components/notif";
 import { Spinner } from "./components/spinner";
-import { isAllowed } from "./services/auth";
+import services from "./services";
 
 const SignUp = lazy(() => import("./pages/sign-up/sign-up"));
 const SignIn = lazy(() => import("./pages/sign-in/sign-in"));
@@ -20,16 +20,32 @@ function App() {
           <Routes location={location} key={location}>
             <Route
               path="/sign-up"
-              element={isAllowed() ? <Navigate to="/" replace /> : <SignUp />}
+              element={
+                services.isAuthorized() ? (
+                  <Navigate to="/" replace />
+                ) : (
+                  <SignUp />
+                )
+              }
             />
             <Route
               path="/sign-in"
-              element={isAllowed() ? <Navigate to="/" replace /> : <SignIn />}
+              element={
+                services.isAuthorized() ? (
+                  <Navigate to="/" replace />
+                ) : (
+                  <SignIn />
+                )
+              }
             />
             <Route
               path="/"
               element={
-                isAllowed() ? <Home /> : <Navigate to="/sign-in" replace />
+                services.isAuthorized() ? (
+                  <Home />
+                ) : (
+                  <Navigate to="/sign-in" replace />
+                )
               }
             />
           </Routes>

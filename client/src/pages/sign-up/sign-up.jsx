@@ -1,11 +1,11 @@
 import { Eye, EyeOff, Square, SquareCheck } from "@assets/vectors/tabler-icons";
 import { Spinner } from "@components/spinner";
 import { AppContext } from "@contexts/";
-import { createUser } from "@services/user.js";
 import { motion } from "framer-motion";
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import services from "../../services";
 import styles from "./sign-up.module.css";
 
 const initialUser = {
@@ -29,7 +29,8 @@ const SignUp = () => {
     setFormStates((prv) => ({ ...prv, creating: true }));
     event.preventDefault();
 
-    createUser(user)
+    services.user
+      .post(user)
       .then(() => {
         setUser(initialUser);
         dispatch((prv) => ({
@@ -40,7 +41,7 @@ const SignUp = () => {
             id: uuidv4(),
           }),
         }));
-        navigate("/", { replace: true });
+        navigate("/sign-in", { replace: true });
       })
       .catch(({ message }) =>
         dispatch((prv) => ({
