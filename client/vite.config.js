@@ -6,11 +6,11 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@assets": ["/src/assets"],
-      "@components": ["/src/components"],
-      "@contexts": ["/src/contexts"],
-      "@pages": ["/src/pages"],
-      "@services": ["/src/services"],
+      "@assets": "./src/assets/",
+      "@components": "./src/components/",
+      "@contexts": "./src/contexts/",
+      "@pages": "./src/pages/",
+      "@services": "./src/services/",
     },
   },
   css: { modules: { localsConvention: "camelCase" } },

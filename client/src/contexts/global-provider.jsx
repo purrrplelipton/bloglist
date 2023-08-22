@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React, { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { setToken } from "../services";
+import { setToken } from "@services/";
 
 const initialState = {
   user: null,

@@ -6,7 +6,12 @@
     "^.+\\.(js|jsx)$": "babel-jest"
   },
   "moduleNameMapper": {
-    "^.+\\.svg$": "jest-svg-transformer",
+    "^@assets(.*)$": "<rootDir>/src/assets$1",
+    "^@components(.*)$": "<rootDir>/src/components$1",
+    "^@contexts(.*)$": "<rootDir>/src/contexts$1",
+    "^@pages(.*)$": "<rootDir>/src/pages$1",
+    "^@services(.*)$": "<rootDir>/src/services$1",
+    "^.+/\\.svg$": "jest-svg-transformer",
     "^.+\\.(css|less|scss)$": "identity-obj-proxy"
   },
   "setupFilesAfterEnv": ["<rootDir>/setupTests.js"]
