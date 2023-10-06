@@ -1,97 +1,68 @@
-import { X } from "@assets/vectors/tabler-icons";
-import { AppContext } from "@contexts/";
-import { AnimatePresence, motion } from "framer-motion";
-import React, { useContext, useEffect, useState } from "react";
+import { IconX } from "@tabler/icons-react";
+import { removeNotification } from "@store/reducers/global";
+import { useEffect, useState } from "react";
+import { connect, useDispatch } from "react-redux";
 import styles from "./notif.module.css";
 
-const dismissDelay = 500;
-
-const Notif = () => {
-  const {
-    state: { notifs },
-    dispatch,
-  } = useContext(AppContext);
-
+const Notif = ({ notifications }) => {
+  const dispatch = useDispatch();
   const [dismissQueue, setDismissQueue] = useState([]);
 
   useEffect(() => {
-    if (dismissQueue.length) {
+    if (dismissQueue.length > 0) {
       const timeoutId = setTimeout(() => {
         const dismissedId = dismissQueue[0];
         setDismissQueue((prevQueue) => prevQueue.slice(1));
-        dispatch((prevState) => ({
-          ...prevState,
-          notifs: prevState.notifs.filter((notif) => notif.id !== dismissedId),
-        }));
-      }, dismissDelay);
+        dispatch(removeNotification(dismissedId));
+      }, 500);
       return () => clearTimeout(timeoutId);
     }
-  }, [dismissQueue, dispatch]);
+  }, [dismissQueue, dispatch, removeNotification]);
 
   useEffect(() => {
-    if (notifs.length && !dismissQueue.length) {
+    if (notifications.length && !dismissQueue.length) {
       const timeoutId = setTimeout(() => {
-        setDismissQueue([notifs[0].id]);
-      }, dismissDelay * 10);
+        setDismissQueue([notifications[0].id]);
+      }, 5000);
 
       return () => clearTimeout(timeoutId);
     }
-  }, [notifs, dismissQueue]);
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1 },
-    exit: { opacity: 0 },
-  };
-  const notificationVariants = {
-    hidden: { opacity: 0, height: 0, marginBottom: 0 },
-    visible: { opacity: 1, height: "auto", marginBottom: 8 },
-    exit: { opacity: 0, height: 0, marginBottom: 0 },
-  };
+  }, [notifications, dismissQueue]);
 
   const handleDismiss = (id) => {
     setDismissQueue((prevQueue) => [...prevQueue, id]);
   };
 
   return (
-    <>
-      <AnimatePresence initial={false}>
-        {notifs.length && (
-          <motion.div
-            id="notifs-container"
-            className={styles.notifsContainer}
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-          >
-            {notifs.map(({ message, color, id }) => (
-              <motion.div
-                key={id}
-                className={`${styles.container} ${id.split(/-/g).pop()}`}
-                variants={notificationVariants}
-                initial="hidden"
-                animate={dismissQueue.includes(id) ? "exit" : "visible"}
-                exit="exit"
+    notifications.length && (
+      <div
+        id="notifs-container"
+        className="fixed left-0 right-0 z-50 max-w-xs px-2 pt-2 mx-auto overflow-auto rounded-lg bottom-4 backdrop-blur-sm max-h-28"
+      >
+        {notifications.map(({ message, color, id }) => (
+          <div key={id} className="overflow-hidden text-white max-h-52">
+            <div
+              className={`max-w-xs max-h-52 py-2 px-3 rounded-md overflow-hidden relative z-50 right-0 left-0 mx-auto flex items-center ${styles[color]}`}
+            >
+              <p>{message}</p>
+              <button
+                type="button"
+                aria-label="Dismiss notification"
+                onClick={() => handleDismiss(id)}
+                className="absolute top-0 bottom-0 right-0 p-2 rounded-lg opacity-40 hover:opacity-90 focus:opacity-90"
               >
-                <div className={`${styles.notif} ${styles[color]}`}>
-                  <p>{message}</p>
-                  <button
-                    type="button"
-                    aria-label="Dismiss notification"
-                    onClick={() => handleDismiss(id)}
-                    className={styles.dismissBtn}
-                  >
-                    <X />
-                  </button>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+                <IconX />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    )
   );
 };
 
-export default Notif;
+const mapStateToProps = (state) => ({
+  notifications: state.global.notifications,
+});
+
+export default connect(mapStateToProps)(Notif);

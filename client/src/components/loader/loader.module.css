@@ -7,15 +7,8 @@
   }
 }
 
-.sp-root {
-  display: block;
-  color: inherit;
+.l-root {
   animation: 1.4s linear 0s infinite normal none running primary;
-  margin: 0 auto;
-}
-
-.sp-svg {
-  display: block;
 }
 
 @keyframes secondary {
@@ -33,13 +26,8 @@
   }
 }
 
-.sp-circle {
-  stroke: currentColor;
+.l-circle {
   stroke-dasharray: 80px, 200px;
   stroke-dashoffset: 0;
   animation: secondary 1.4s ease-in-out infinite;
-}
-
-.sp-text {
-  text-align: center;
 }

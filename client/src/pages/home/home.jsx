@@ -1,103 +1,85 @@
-import { Spinner } from "@components/spinner";
-import { AppContext } from "@contexts/";
-import services from "@services/";
-import { motion } from "framer-motion";
-import React, { useContext, useEffect, useState } from "react";
+import Loader from "@components/loader";
+import { settoken } from "@services/auth";
+import { initializeBlogs } from "@store/reducers/home";
+import { appendNotification, setUser } from "@store/reducers/global";
+import { initializeUserInfo } from "@store/reducers/user";
+import { useEffect, useState } from "react";
+import { connect, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { HomeContext } from ".";
 import { Blog } from "./blog";
 import { BlogForm } from "./blog-form";
 import { Drawer } from "./drawer";
 import { Footer } from "./footer";
 import { Header } from "./header";
-import styles from "./home.module.css";
 
-const Home = () => {
-  const { dispatch } = useContext(AppContext);
-  const [homeStates, homeDispatch] = useState({
-    drawerIsOpen: false,
-    searchQuery: "",
-    blogs: [],
-    faves: [],
-    formIsOpen: false,
-  });
-  const [fetching, setFetching] = useState(false);
+const Home = ({ blogs, loading }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    setFetching(true);
-
-    services.blog
-      .get("all")
-      .then((data) => homeDispatch((prv) => ({ ...prv, blogs: data })))
-      .catch(({ message }) =>
-        dispatch((prv) => ({
-          notifs: prv.notifs.concat({
-            message,
-            color: ["secondary", "info", "success", "warning", "error"][
-              Math.floor(Math.random() * 5)
-            ],
-            id: uuidv4(),
-          }),
-        }))
-      )
-      .finally(() => setFetching(false));
+    const dgtoken = localStorage.getItem("dgtoken");
+    if (dgtoken) {
+      const { id, token } = JSON.parse(dgtoken);
+      dispatch(setUser(id));
+      settoken(token);
+      return;
+    }
+    navigate("/sign-in");
   }, []);
 
   useEffect(() => {
-    services.user
-      .get()
-      .then(({ favorites }) =>
-        homeDispatch((prv) => ({ ...prv, faves: favorites }))
-      )
-      .catch(({ message }) => {
-        dispatch((prv) => ({
-          ...prv,
-          notifs: prv.notifs.concat({
-            message,
+    async function getPayload() {
+      try {
+        dispatch(initializeUserInfo());
+        dispatch(initializeBlogs());
+      } catch (error) {
+        setError(error);
+        dispatch(
+          appendNotification({
+            message: error.message,
             color: "error",
             id: uuidv4(),
-          }),
-        }));
-      });
+          })
+        );
+      }
+    }
+    getPayload();
   }, []);
 
-  const homeVariants = {
-    hidden: {
-      opacity: 0,
-      x: "100%",
-    },
-    visible: {
-      opacity: 1,
-      x: 0,
-    },
-    exit: {
-      opacity: 0,
-      x: "-100%",
-    },
-  };
-
   return (
-    <HomeContext.Provider value={{ homeStates, homeDispatch }}>
-      <motion.main
-        variant={homeVariants}
-        initial="hidden"
-        animate="visible"
-        exit="exit"
+    <div role="main" className="">
+      <Header />
+      <Drawer />
+      <section
+        className="min-h-screen px-3 flex flex-col items-stretch"
+        aria-live="polite"
       >
-        <Header />
-        <Drawer />
-        <section className={styles.blogs} aria-live="polite">
-          {fetching ? (
-            <Spinner text={"Please wait"} width={40} />
-          ) : (
-            homeStates.blogs.map((blog) => <Blog key={blog.id} blog={blog} />)
-          )}
-        </section>
-        <BlogForm />
-        <Footer />
-      </motion.main>
-    </HomeContext.Provider>
+        {loading && <Loader />}
+        {error && <div>{error.message}</div>}
+        {!loading && !error && blogs.length === 0 && (
+          <h1 className="text-2xl text-slate-300 text-center m-auto">
+            No blogs right now.
+          </h1>
+        )}
+        {!loading && !error && blogs.length > 0 && (
+          <div>
+            {blogs.map((blog) => (
+              <Blog key={blog.id} blog={blog} />
+            ))}
+          </div>
+        )}
+      </section>
+      <BlogForm />
+      <Footer />
+    </div>
   );
 };
 
-export default Home;
+const mapStateToProps = (state) => ({
+  blogs: state.home.blogs,
+  loading: state.home.loading,
+});
+
+export default connect(mapStateToProps)(Home);

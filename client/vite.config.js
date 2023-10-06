@@ -1,16 +1,19 @@
 import react from "@vitejs/plugin-react";
+import { resolve } from "node:path";
 import { defineConfig } from "vite";
+import vitePluginSvgr from "vite-plugin-svgr";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), vitePluginSvgr()],
   resolve: {
     alias: {
-      "@assets": "./src/assets/",
-      "@components": "./src/components/",
-      "@contexts": "./src/contexts/",
-      "@pages": "./src/pages/",
-      "@services": "./src/services/",
+      "@assets": resolve(__dirname, "src/assets"),
+      "@components": resolve(__dirname, "src/components"),
+      "@contexts": resolve(__dirname, "src/contexts"),
+      "@pages": resolve(__dirname, "src/pages"),
+      "@services": resolve(__dirname, "src/services"),
+      "@store": resolve(__dirname, "src/store"),
     },
   },
   css: { modules: { localsConvention: "camelCase" } },

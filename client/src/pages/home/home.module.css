@@ -1,8 +1,0 @@
-.blogs {
-  min-height: 100vh;
-  padding: 12px;
-}
-
-.blogs:not(:empty) {
-  padding-top: 94px;
-}

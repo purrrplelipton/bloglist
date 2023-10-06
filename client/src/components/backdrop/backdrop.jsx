@@ -1,53 +1,39 @@
-import { AnimatePresence, motion } from "framer-motion";
-import PropTypes from "prop-types";
-import React from "react";
-import styles from "./backdrop.module.css";
-import { X } from "@assets/vectors/tabler-icons";
+import { IconX } from "@tabler/icons-react";
+import { bool, element, func, node, oneOfType, string } from "prop-types";
 
 const Backdrop = ({ isOpen, onClose, children }) => {
-  const backdropVariants = {
-    hidden: {
-      opacity: 0,
-    },
-    visible: {
-      opacity: 1,
-    },
-    exit: { opacity: 0 },
-  };
-
   return (
-    <AnimatePresence initial={false} mode="wait" onExitComplete={() => {}}>
-      {isOpen && (
-        <motion.div
-          className={styles.backdrop}
-          onClick={onClose}
-          variants={backdropVariants}
-          initial="hidden"
-          animate="visible"
-          exit="exit"
+    isOpen && (
+      <div
+        className="fixed top-0 right-0 bottom-0 left-0 z-50 bg-[#0001] backdrop-blur-sm flex items-center justify-center"
+        onClick={onClose}
+        role="presentation"
+      >
+        <button
+          type="button"
+          aria-label="Close form"
+          className="absolute top-0 right-0 p-1 -translate-x-6 translate-y-8 rounded-full"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
         >
-          <motion.button
-            type="button"
-            aria-label="Close form"
-            className={styles.closeBtn}
-            onClick={onClose}
-            initial={{ x: "100%", opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: "100%", opacity: 0 }}
-          >
-            <X />
-          </motion.button>
-          {children}
-        </motion.div>
-      )}
-    </AnimatePresence>
+          <IconX />
+        </button>
+        {children}
+      </div>
+    )
   );
 };
 
+Backdrop.defaultProps = {
+  children: null,
+};
+
 Backdrop.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  children: PropTypes.node.isRequired,
+  isOpen: bool.isRequired,
+  onClose: func.isRequired,
+  children: oneOfType([node, element, string]),
 };
 
 export default Backdrop;

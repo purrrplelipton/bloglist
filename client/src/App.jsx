@@ -1,10 +1,8 @@
-import { AnimatePresence } from "framer-motion";
-import React, { lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import "./App.css";
+import Loader from "./components/loader";
 import { Notif } from "./components/notif";
-import { Spinner } from "./components/spinner";
-import services from "./services";
+import { authorized } from "./services/auth";
 
 const SignUp = lazy(() => import("./pages/sign-up/sign-up"));
 const SignIn = lazy(() => import("./pages/sign-in/sign-in"));
@@ -15,41 +13,23 @@ function App() {
 
   return (
     <>
-      <Suspense fallback={<Spinner text={"Hold on a sec"} width={40} />}>
-        <AnimatePresence initial={false} mode="wait" onExitComplete={() => {}}>
-          <Routes location={location} key={location}>
-            <Route
-              path="/sign-up"
-              element={
-                services.isAuthorized() ? (
-                  <Navigate to="/" replace />
-                ) : (
-                  <SignUp />
-                )
-              }
-            />
-            <Route
-              path="/sign-in"
-              element={
-                services.isAuthorized() ? (
-                  <Navigate to="/" replace />
-                ) : (
-                  <SignIn />
-                )
-              }
-            />
-            <Route
-              path="/"
-              element={
-                services.isAuthorized() ? (
-                  <Home />
-                ) : (
-                  <Navigate to="/sign-in" replace />
-                )
-              }
-            />
-          </Routes>
-        </AnimatePresence>
+      <Suspense fallback={<Loader text={"Hold on a sec"} width={40} />}>
+        <Routes location={location} key={location}>
+          <Route
+            path="/sign-up"
+            element={authorized() ? <Navigate to="/" replace /> : <SignUp />}
+          />
+          <Route
+            path="/sign-in"
+            element={authorized() ? <Navigate to="/" replace /> : <SignIn />}
+          />
+          <Route
+            path="/"
+            element={
+              authorized() ? <Home /> : <Navigate to="/sign-in" replace />
+            }
+          />
+        </Routes>
       </Suspense>
       <Notif />
     </>

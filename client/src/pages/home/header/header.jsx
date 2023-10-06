@@ -1,125 +1,119 @@
-import { Menu, Search, UserCircle, X } from "@assets/vectors/tabler-icons";
-import { Spinner } from "@components/spinner";
-import { AppContext } from "@contexts/";
-import React, { useContext, useEffect, useState } from "react";
+import blogsApi from "@services/blogs";
+import { setSearchParam, showDrawer } from "@store/reducers/common";
+import { appendNotification } from "@store/reducers/global";
+import { IconMenu, IconUserCircle, IconX } from "@tabler/icons-react";
+import { useEffect, useState } from "react";
+import { connect, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import services from "@services/";
-import { HomeContext } from "../";
-import styles from "./header.module.css";
-import { SearchSection } from "./search";
 import { HeaderContext } from "./";
+import { SearchSection } from "./search";
 
-const Header = () => {
-  const {
-    homeStates: { drawerIsOpen, searchQuery },
-    homeDispatch,
-  } = useContext(HomeContext);
-  const { dispatch } = useContext(AppContext);
+const Header = ({ showDrawer: drawerVisible, searchParam }) => {
+  const dispatch = useDispatch();
   const [headerStates, headerDispatch] = useState({
     fetching: false,
-    queryResults: [],
+    results: [],
   });
   const [searchDelay, setSearchDelay] = useState(null);
 
   useEffect(() => {
-    if (searchQuery.trim()) {
-      if (searchDelay) clearTimeout(searchDelay);
-
-      const delayTimer = setTimeout(() => handleBlogSearch(), 500);
+    if (searchParam) {
+      if (searchDelay) {
+        clearTimeout(searchDelay);
+      }
+      const delayTimer = setTimeout(() => {
+        handleBlogSearch();
+      }, 1000);
 
       setSearchDelay(delayTimer);
     }
-  }, [searchQuery]);
+  }, [searchParam]);
 
   function handleBlogSearch() {
     headerDispatch((prv) => ({ ...prv, fetching: true }));
 
-    if (searchQuery.trim()) {
-      services.blog
-        .get("search", searchQuery.trim())
-        .then((blogs) =>
-          headerDispatch((prv) => ({ ...prv, queryResults: blogs }))
-        )
-        .catch(({ message }) =>
-          dispatch((prv) => ({
-            ...prv,
-            notifs: prv.notifs.concat({
+    if (searchParam.trim()) {
+      blogsApi
+        .get("/", searchParam)
+        .then((blogs) => headerDispatch((prv) => ({ ...prv, results: blogs })))
+        .catch(({ message }) => {
+          dispatch(
+            appendNotification({
               message,
               color: "error",
               id: uuidv4(),
-            }),
-          }))
-        )
-        .finally(() => headerDispatch((prv) => ({ ...prv, fetching: false })));
-    } else headerDispatch((prv) => ({ ...prv, queryResults: [] }));
+            })
+          );
+        });
+      headerDispatch((prv) => ({ ...prv, fetching: false }));
+      return;
+    }
+    headerDispatch((prv) => ({ ...prv, results: [] }));
   }
 
   return (
     <HeaderContext.Provider value={{ headerStates, headerDispatch }}>
-      <header className={styles.header}>
-        <button
-          type="button"
-          className={styles.drawerToggler}
-          onClick={() =>
-            homeDispatch((prv) => ({ ...prv, drawerIsOpen: !prv.drawerIsOpen }))
-          }
-          aria-label={drawerIsOpen ? "Close drawer" : "Open drawer"}
-        >
-          <Menu />
-        </button>
-        <form
-          method="GET"
-          action="/get-blog"
-          className={styles.blogSearch}
-          onSubmit={handleBlogSearch}
-        >
-          <input
-            type="text"
-            id="blog-search"
-            value={searchQuery}
-            onChange={(e) => {
-              const value = e.target.value;
-              homeDispatch((prv) => ({ ...prv, searchQuery: value }));
-              headerDispatch((prv) => ({
-                ...prv,
-                fetching: Boolean(value.trim()),
-              }));
-            }}
-            placeholder="search"
-          />
+      <header className="fixed top-0 left-0 z-50 w-full px-3 py-5">
+        <div className="flex items-center justify-between w-full max-w-screen-xl p-3 mx-auto rounded-full shadow shadow-gray-300 bg-white">
           <button
-            type={searchQuery.trim() ? "reset" : "submit"}
-            aria-label={searchQuery.trim() ? "Clear search" : "Search"}
-            disabled={!searchQuery.trim() || headerStates.fetching}
-            onClick={(e) => {
-              e.preventDefault();
-              if (e.currentTarget.type === "reset") {
-                homeDispatch((prv) => ({ ...prv, searchQuery: "" }));
+            type="button"
+            className="p-1 overflow-hidden rounded-full"
+            onClick={() => dispatch(showDrawer())}
+            aria-label={drawerVisible ? "Close drawer" : "Open drawer"}
+          >
+            <IconMenu />
+          </button>
+          <form
+            className="flex items-center overflow-hidden rounded-md"
+            onSubmit={handleBlogSearch}
+          >
+            <input
+              type="text"
+              id="blog-search"
+              value={searchParam}
+              onChange={(e) => {
+                const { value } = e.target;
+                dispatch(setSearchParam(value));
                 headerDispatch((prv) => ({
                   ...prv,
-                  fetching: false,
-                  queryResults: [],
+                  fetching: Boolean(value),
                 }));
-              }
-            }}
+              }}
+              placeholder="Search"
+              className="px-2 py-1 outline-none"
+            />
+            <button
+              type="button"
+              aria-label="Clear"
+              aria-disabled={!searchParam || headerStates.fetching}
+              onClick={() => {
+                if (searchParam && !headerStates.fetching) {
+                  dispatch(setSearchParam(""));
+                }
+              }}
+              className="p-1 rounded-md aria-disabled:opacity-10"
+            >
+              <IconX />
+            </button>
+          </form>
+          <Link
+            aria-label="My Account"
+            to="/acc"
+            className="p-1 overflow-hidden rounded-full"
           >
-            {headerStates.fetching ? (
-              <Spinner width={24} />
-            ) : searchQuery.trim() ? (
-              <X />
-            ) : (
-              <Search />
-            )}
-          </button>
-        </form>
-        <Link aria-label="my account" to="/acc" className={styles.userInfo}>
-          <UserCircle />
-        </Link>
+            <IconUserCircle />
+          </Link>
+        </div>
       </header>
-      <SearchSection />
+      {searchParam.trim() && <SearchSection />}
     </HeaderContext.Provider>
   );
 };
 
-export default Header;
+const mapStateToProps = (state) => ({
+  searchParam: state.common.searchParam,
+  showDrawer: state.common.showDrawer,
+});
+
+export default connect(mapStateToProps)(Header);

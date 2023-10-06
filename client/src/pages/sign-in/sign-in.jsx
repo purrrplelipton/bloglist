@@ -5,52 +5,55 @@ import {
   Square,
   SquareCheck,
 } from "@assets/vectors/tabler-icons";
-import { Spinner } from "@components/spinner";
-import { AppContext } from "@contexts/";
-import services from "@services/";
-import { motion } from "framer-motion";
-import React, { useContext, useState } from "react";
+import Loader from "@components/loader";
+import { verify } from "@services/auth";
+import { appendNotification, setUser } from "@store/reducers/global";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import styles from "./sign-in.module.css";
-
-const initialUser = {
-  email$alias: "",
-  password: "",
-  rememberMe: false,
-};
-
 const SignIn = () => {
   const navigate = useNavigate();
-  const { dispatch } = useContext(AppContext);
-  const [user, setUser] = useState(initialUser);
-  const [formStates, setFormStates] = useState({ verifying: false });
+  const dispatch = useDispatch();
+  const [details, setDetails] = useState({
+    email$alias: "",
+    password: "",
+    rememberMe: false,
+  });
+  const [verifying, setVerifying] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   async function verifyDetails(event) {
-    setFormStates((prv) => ({ ...prv, verifying: true }));
     event.preventDefault();
-
+    setVerifying(true);
     try {
-      const id = await services.verify(user);
-      dispatch((prv) => ({
-        ...prv,
-        user: id,
-        notifs: prv.notifs.concat({
+      const id = await verify(details);
+      dispatch(setUser(id));
+      dispatch(
+        appendNotification({
           message: "Sign in successful",
           color: "success",
           id: uuidv4(),
-        }),
-      }));
-      setUser(initialUser);
-      navigate("/", { replace: true });
-    } catch ({ message }) {
-      dispatch((prv) => ({
+        })
+      );
+      setDetails((prv) => ({
         ...prv,
-        notifs: prv.notifs.concat({ message, color: "error", id: uuidv4() }),
+        email$alias: "",
+        password: "",
+        rememberMe: false,
       }));
-      setFormStates((prv) => ({ ...prv, verifying: false }));
+      navigate("/", { replace: true });
+    } catch (error) {
+      dispatch(
+        appendNotification({
+          message: error.message,
+          color: "error",
+          id: uuidv4(),
+        })
+      );
     }
+    setVerifying(false);
   }
 
   function signInWithGoogle() {}
@@ -71,7 +74,7 @@ const SignIn = () => {
   };
 
   return (
-    <motion.main
+    <main
       variants={signInVariants}
       initial="hidden"
       animate="visible"
@@ -91,11 +94,11 @@ const SignIn = () => {
             name="username_email"
             id="user-id"
             onChange={(evt) =>
-              setUser((prv) => ({ ...prv, email$alias: evt.target.value }))
+              setDetails((prv) => ({ ...prv, email$alias: evt.target.value }))
             }
-            value={user.email$alias}
-            required={!user.email$alias.trim()}
-            autoComplete={"username"}
+            value={details.email$alias}
+            required={!details.email$alias.trim()}
+            autoComplete="off"
           />
           <span>email | alias</span>
         </label>
@@ -105,11 +108,11 @@ const SignIn = () => {
             name="user_password"
             id="user-password"
             onChange={(evt) =>
-              setUser((prv) => ({ ...prv, password: evt.target.value }))
+              setDetails((prv) => ({ ...prv, password: evt.target.value }))
             }
-            value={user.password}
-            required={!user.password.trim()}
-            autoComplete={"current-password"}
+            value={details.password}
+            required={!details.password.trim()}
+            autoComplete="off"
           />
 
           <span>password</span>
@@ -126,12 +129,12 @@ const SignIn = () => {
             type="checkbox"
             name="remember_me"
             id="remember-me"
-            checked={user.rememberMe}
+            checked={details.rememberMe}
             onChange={(evt) =>
-              setUser((prv) => ({ ...prv, rememberMe: evt.target.checked }))
+              setDetails((prv) => ({ ...prv, rememberMe: evt.target.checked }))
             }
           />
-          {user.rememberMe ? <SquareCheck /> : <Square />}
+          {details.rememberMe ? <SquareCheck /> : <Square />}
           <span>Remember me for 30 days</span>
         </label>
         <a
@@ -142,8 +145,8 @@ const SignIn = () => {
         >
           Forgot password
         </a>
-        <button type="submit" disabled={formStates.verifying}>
-          {formStates.verifying ? <Spinner width={18} /> : "sign in"}
+        <button type="submit" disabled={verifying}>
+          {verifying ? <Loader width={18} /> : "sign in"}
         </button>
         <button
           type="button"
@@ -157,7 +160,7 @@ const SignIn = () => {
       <p>
         Don&apos;t have an account? <Link to="/sign-up">sign up</Link>
       </p>
-    </motion.main>
+    </main>
   );
 };
 

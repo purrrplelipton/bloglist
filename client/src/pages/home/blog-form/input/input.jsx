@@ -1,11 +1,6 @@
 import DOMPurify from "dompurify";
 import PropTypes from "prop-types";
-import React, {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-} from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import styles from "./input.module.css";
 
 const Input = forwardRef(
@@ -42,7 +37,7 @@ const Input = forwardRef(
         onInput={handleInputChange}
         onKeyDown={handleKeyDown}
         ref={InputRef}
-        className={styles.input}
+        className={`${styles.input} max-w-full overflow-y-auto overflow-x-hidden relative outline-none`}
         aria-multiline="true"
         spellCheck
         tabIndex={0}

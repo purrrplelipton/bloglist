@@ -1,48 +1,40 @@
-import { Spinner } from "@components/spinner";
-import { HomeContext } from "@pages/home";
-import { AnimatePresence, motion } from "framer-motion";
-import React, { useContext } from "react";
+import Loader from "@components/loader";
+import { useContext } from "react";
+import { connect } from "react-redux";
 import { HeaderContext } from "..";
-import styles from "./search.module.css";
 
-const SearchSection = () => {
+const SearchSection = ({ searchParam }) => {
   const {
-    homeStates: { searchQuery },
-  } = useContext(HomeContext);
-  const {
-    headerStates: { fetching, queryResults },
+    headerStates: { fetching, results },
   } = useContext(HeaderContext);
 
   return (
-    <>
-      <AnimatePresence initial={false} mode="wait">
-        {(searchQuery.trim() || fetching) && (
-          <motion.section
-            initial={{ oapcity: 0, y: "-100%" }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: "-100%" }}
-            className={styles.searchResultsSection}
-          >
-            {fetching ? (
-              <Spinner width={32} />
-            ) : queryResults.length ? (
-              queryResults.map((blog) => (
-                <article className={styles.fetchedBlog} key={blog.id}>
-                  <p className={styles.blogTitle}>{blog.title}</p>
-                  <img
-                    src={blog.thumbnail}
-                    alt={`Thumbnail for blog titled: ${blog.title}`}
-                  />
-                </article>
-              ))
-            ) : (
-              <p>No matching results.</p>
-            )}
-          </motion.section>
-        )}
-      </AnimatePresence>
-    </>
+    <section className="fixed top-24 right-3 left-3 shadow shadow-slate-100 p-2 rounded-lg min-h-[280px] z-50 max-h-[375px]">
+      {searchParam && fetching && <Loader />}
+      {searchParam && !fetching && results.length > 0 && (
+        <div>
+          {results.map((blog) => (
+            <article
+              className="flex items-center justify-between rounded-lg p-2 overflow-hidden bg-slate-200"
+              key={blog.id}
+            >
+              <p className="">{blog.title}</p>
+              <img
+                src={blog.thumbnail}
+                alt={`Thumbnail for blog titled: ${blog.title}`}
+                className="h-24 aspect-square rounded-md"
+              />
+            </article>
+          ))}
+        </div>
+      )}
+      {!searchParam && !fetching && results.length === 0 && (
+        <div>No matching results.</div>
+      )}
+    </section>
   );
 };
 
-export default SearchSection;
+const mapStateToProps = (state) => ({ searchParam: state.common.searchParam });
+
+export default connect(mapStateToProps)(SearchSection);

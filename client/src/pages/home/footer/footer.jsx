@@ -1,26 +1,23 @@
-import { Plus } from "@assets/vectors/tabler-icons";
-import { motion } from "framer-motion";
-import React, { useContext } from "react";
-import { HomeContext } from "../";
-import styles from "./footer.module.css";
+import { setFormVisible } from "@store/reducers/home";
+import { IconPlus } from "@tabler/icons-react";
+import { useDispatch } from "react-redux";
 
 const Footer = () => {
-  const { homeDispatch } = useContext(HomeContext);
+  const dispatch = useDispatch();
 
   return (
-    <motion.footer
-      className={styles.toolbar}
-      whileTap={{ scale: 0.9 }}
-      whileHover={{ scale: 1.1 }}
-    >
-      <button
-        aria-label="create blog"
-        type="button"
-        onClick={() => homeDispatch((prv) => ({ ...prv, formIsOpen: true }))}
-      >
-        <Plus />
-      </button>
-    </motion.footer>
+    <footer className="fixed right-0 bottom-0 w-full px-3 py-5">
+      <div className="flex items-center">
+        <button
+          aria-label="Add blog"
+          type="button"
+          onClick={() => dispatch(setFormVisible())}
+          className="p-2 rounded-full bg-white active:scale-95 shadow shadow-slate-200 hover:shadow-slate-50 mx-auto"
+        >
+          <IconPlus className="w-10 h-10" />
+        </button>
+      </div>
+    </footer>
   );
 };
 

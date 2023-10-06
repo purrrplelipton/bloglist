@@ -1,1 +1,3 @@
-export { default as Backdrop } from "./backdrop";
+import Backdrop from "./backdrop";
+
+export default Backdrop;

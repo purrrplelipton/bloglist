@@ -1,23 +1,20 @@
 import { Eye, EyeOff, Square, SquareCheck } from "@assets/vectors/tabler-icons";
-import { Spinner } from "@components/spinner";
-import { AppContext } from "@contexts/";
-import { motion } from "framer-motion";
-import React, { useContext, useState } from "react";
+import Loader from "@components/loader";
+import usersApi from "@services/users";
+import { appendNotification } from "@store/reducers/global";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import services from "../../services";
 import styles from "./sign-up.module.css";
-
-const initialUser = {
-  name: { first: "", last: "" },
-  email: "",
-  password: "",
-};
-
 const SignUp = () => {
   const navigate = useNavigate();
-  const { dispatch } = useContext(AppContext);
-  const [user, setUser] = useState(initialUser);
+  const dispatch = useDispatch();
+  const [user, setUser] = useState({
+    name: { first: "", last: "" },
+    email: "",
+    password: "",
+  });
 
   const [formStates, setFormStates] = useState({
     showPassword: false,
@@ -25,31 +22,31 @@ const SignUp = () => {
     creating: false,
   });
 
-  function submitDetails(event) {
-    setFormStates((prv) => ({ ...prv, creating: true }));
+  async function submitDetails(event) {
     event.preventDefault();
+    setFormStates((prv) => ({ ...prv, creating: true }));
+    try {
+      await usersApi.post(user);
+      setUser({});
+      dispatch(
+        appendNotification({
+          message: "Account created successfully",
+          color: "success",
+          id: uuidv4(),
+        })
+      );
+      navigate("/sign-in", { replace: true });
+    } catch (error) {
+      dispatch(
+        appendNotification({
+          message: error.message,
+          color: "error",
+          id: uuidv4(),
+        })
+      );
+    }
 
-    services.user
-      .post(user)
-      .then(() => {
-        setUser(initialUser);
-        dispatch((prv) => ({
-          ...prv,
-          notifs: prv.notifs.concat({
-            message: "Account created successfully",
-            color: "success",
-            id: uuidv4(),
-          }),
-        }));
-        navigate("/sign-in", { replace: true });
-      })
-      .catch(({ message }) =>
-        dispatch((prv) => ({
-          ...prv,
-          notifs: prv.notifs.concat({ message, color: "error", id: uuidv4() }),
-        }))
-      )
-      .finally(() => setFormStates((prv) => ({ ...prv, creating: false })));
+    setFormStates((prv) => ({ ...prv, creating: false }));
   }
 
   const signUpVariants = {
@@ -68,7 +65,7 @@ const SignUp = () => {
   };
 
   return (
-    <motion.main
+    <main
       variants={signUpVariants}
       initial="hidden"
       animate="visible"
@@ -176,13 +173,13 @@ const SignUp = () => {
           <span>I agree to the Tobi Terms of Service</span>
         </label>
         <button type="submit" disabled={!formStates.termsOfServiceAccepted}>
-          {formStates.creating ? <Spinner width={18} /> : "Sign Up"}
+          {formStates.creating ? <Loader width={18} /> : "Sign Up"}
         </button>
       </form>
       <p className={styles.signInRedirect}>
         Already have an account? <Link to="/sign-in">Sign In</Link>
       </p>
-    </motion.main>
+    </main>
   );
 };
 

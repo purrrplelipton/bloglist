@@ -1,63 +1,50 @@
-import { Photo } from "@assets/vectors/tabler-icons";
-import { Backdrop } from "@components/backdrop";
-import { Spinner } from "@components/spinner";
-import { AppContext } from "@contexts/";
-import services from "@services/";
+import Backdrop from "@components/backdrop";
+import Loader from "@components/loader";
+import blogsApi from "@services/blogs";
+import { appendNotification } from "@store/reducers/global";
+import { createBlog, setFormHidden } from "@store/reducers/home";
+import { IconPhoto } from "@tabler/icons-react";
 import DOMPurify from "dompurify";
-import { motion } from "framer-motion";
-import React, { useContext, useState } from "react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { connect, useDispatch } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
-import { HomeContext } from "../";
 import styles from "./blog-form.module.css";
 import { Input } from "./input";
 
-const defaultBlog = { title: "", content: "", thumbnail: null };
-
-const BlogForm = () => {
-  const { dispatch } = useContext(AppContext);
-  const {
-    homeStates: { formIsOpen },
-    homeDispatch,
-  } = useContext(HomeContext);
-  const [blog, setBlog] = useState(defaultBlog);
+const BlogForm = ({ formVisible }) => {
+  const dispatch = useDispatch();
+  const [blog, setBlog] = useState({ title: "", content: "", thumbnail: null });
   const [uploading, setUploading] = useState(false);
   const titleRef = useRef();
   const contentRef = useRef();
 
-  function closeForm() {
-    return homeDispatch((prv) => ({ ...prv, formIsOpen: false }));
-  }
-
   function uploadBlog(event) {
     event.preventDefault();
     setUploading(true);
-
-    return services.blog
+    blogsApi
       .post(blog)
-      .then((savedBlog) => {
-        console.log(savedBlog);
-        homeDispatch((prv) => ({ ...prv, blogs: [savedBlog, ...prv.blogs] }));
-        dispatch((prv) => ({
-          ...prv,
-          notifs: prv.notifs.concat({
+      .then(() => {
+        createBlog(blog);
+        dispatch(
+          appendNotification({
             message: "Blog Uploaded",
             color: "success",
             id: uuidv4(),
-          }),
-        }));
+          })
+        );
+        dispatch(setFormHidden());
+        setBlog({});
       })
-      .catch(({ message }) =>
-        dispatch((prv) => ({
-          ...prv,
-          notifs: prv.notifs.concat({ message, color: "error", id: uuidv4() }),
-        }))
-      )
-      .finally(() => {
-        setUploading(false);
-        setBlog(defaultBlog);
-        homeDispatch((prv) => ({ ...prv, formIsOpen: false }));
+      .catch(({ message }) => {
+        dispatch(
+          appendNotification({
+            message,
+            color: "error",
+            id: uuidv4(),
+          })
+        );
       });
+    setUploading(false);
   }
 
   function handleThumbnailChange(event) {
@@ -70,91 +57,75 @@ const BlogForm = () => {
     return reader.readAsDataURL(file);
   }
 
-  const blogFormVariants = {
-    hidden: {
-      y: "100%",
-      opacity: 0,
-    },
-    visible: {
-      y: "0",
-      opacity: 1,
-    },
-    exit: {
-      y: "100%",
-      opacity: 0,
-    },
-  };
-
   return (
-    <Backdrop isOpen={formIsOpen} onClose={closeForm}>
-      <motion.div
-        className={styles.formWrapper}
-        variants={blogFormVariants}
-        initial="hidden"
-        animate="visible"
-        exit="exit"
-      >
-        <form
-          onClick={(e) => e.stopPropagation()}
-          action="/upload-blog"
-          method="POST"
-          encType="multipart/form-data"
-          onSubmit={uploadBlog}
-          className={styles.createForm}
+    formVisible && (
+      <>
+        <Backdrop
+          isOpen={formVisible}
+          onClose={() => dispatch(setFormHidden())}
         >
-          <div className={styles.fieldWrapper}>
-            <Input
-              ref={titleRef}
-              label="Title"
-              placeholder="title"
-              onInput={(value) => setBlog((prv) => ({ ...prv, title: value }))}
-              value={DOMPurify.sanitize(blog.title)}
-            />
-          </div>
-          <div
-            className={[styles.fieldWrapper, styles.contentWrapper].join(" ")}
+          <form
+            onClick={(e) => e.stopPropagation()}
+            encType="multipart/form-data"
+            onSubmit={uploadBlog}
+            className="w-full bg-white mt-auto rounded-tr-3xl rounded-tl-3xl p-6"
           >
-            <Input
-              ref={contentRef}
-              label="Content"
-              placeholder="content"
-              onInput={(value) =>
-                setBlog((prv) => ({ ...prv, content: value }))
-              }
-              value={DOMPurify.sanitize(blog.content)}
-            />
-          </div>
-          <div className={styles.chooseThumbnail}>
-            <label htmlFor="blog-thumbnail">
-              <Photo />
-              {blog.thumbnail ? "change" : "pick a"} thumbnail
-            </label>
             <input
-              type="file"
-              accept="image/*"
-              name="thumbnail"
-              id="blog-thumbnail"
-              onChange={handleThumbnailChange}
+              id="title"
+              type="text"
+              placeholder="Title"
+              onChange={(e) =>
+                setBlog((prv) => ({ ...prv, title: e.target.value }))
+              }
+              className="block w-full bg-slate-50 outline-none"
             />
-            {blog.thumbnail && (
-              <img
-                src={blog.thumbnail}
-                alt="Thumbnail Preview"
-                className={styles.thumbnailPreview}
+            <textarea
+              id="content"
+              cols="30"
+              rows="10"
+              placeholder="Content"
+              onChange={(e) =>
+                setBlog((prv) => ({ ...prv, content: e.target.value }))
+              }
+              className="block w-full resize-none bg-slate-50 outline-none my-3"
+            />
+
+            <div className={styles.chooseThumbnail}>
+              <label htmlFor="blog-thumbnail">
+                <IconPhoto />
+                {blog.thumbnail ? "change" : "pick a"} thumbnail
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                name="thumbnail"
+                id="blog-thumbnail"
+                onChange={handleThumbnailChange}
               />
-            )}
-          </div>
-          <button
-            type="submit"
-            disabled={!(blog.title.trim() && blog.content.trim()) || uploading}
-            aria-label="upload blog"
-          >
-            {uploading ? <Spinner width={18} /> : "upload"}
-          </button>
-        </form>
-      </motion.div>
-    </Backdrop>
+              {blog.thumbnail && (
+                <img
+                  src={blog.thumbnail}
+                  alt="Thumbnail Preview"
+                  className={styles.thumbnailPreview}
+                />
+              )}
+            </div>
+            <button
+              type="submit"
+              aria-disabled={
+                !(blog.title.trim() && blog.content.trim()) || uploading
+              }
+              aria-label="upload blog"
+            >
+              {uploading ? <Loader width={18} /> : "upload"}
+            </button>
+          </form>
+        </Backdrop>
+      </>
+    )
   );
 };
 
-export default BlogForm;
+const mapStateToProps = (state) => ({ formVisible: state.home.formVisible });
+
+export default connect(mapStateToProps)(BlogForm);

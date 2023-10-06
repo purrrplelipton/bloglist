@@ -1,4 +1,3 @@
-/* eslint-disable linebreak-style */
 import { hash } from "bcrypt";
 import { Router } from "express";
 import { User as usr } from "../models/user.js";
