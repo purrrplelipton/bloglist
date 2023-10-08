@@ -2,59 +2,55 @@ import Backdrop from "@components/backdrop";
 import Loader from "@components/loader";
 import blogsApi from "@services/blogs";
 import { appendNotification } from "@store/reducers/global";
-import { createBlog, setFormHidden } from "@store/reducers/home";
+import { appendBlog, setFormHidden } from "@store/reducers/home";
 import { IconPhoto } from "@tabler/icons-react";
-import DOMPurify from "dompurify";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { connect, useDispatch } from "react-redux";
-import { v4 as uuidv4 } from "uuid";
-import styles from "./blog-form.module.css";
-import { Input } from "./input";
 
 const BlogForm = ({ formVisible }) => {
   const dispatch = useDispatch();
-  const [blog, setBlog] = useState({ title: "", content: "", thumbnail: null });
+  const [blogTitle, setBlogTitle] = useState("");
+  const [blogContent, setBlogContent] = useState("");
+  const [blogThumbnail, setBlogThumbnail] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const titleRef = useRef();
-  const contentRef = useRef();
 
-  function uploadBlog(event) {
-    event.preventDefault();
+  async function uploadBlog(e) {
+    e.preventDefault();
+    if (!blogTitle || !blogContent) return;
     setUploading(true);
-    blogsApi
-      .post(blog)
-      .then(() => {
-        createBlog(blog);
-        dispatch(
-          appendNotification({
-            message: "Blog Uploaded",
-            color: "success",
-            id: uuidv4(),
-          })
-        );
-        dispatch(setFormHidden());
-        setBlog({});
-      })
-      .catch(({ message }) => {
-        dispatch(
-          appendNotification({
-            message,
-            color: "error",
-            id: uuidv4(),
-          })
-        );
+    try {
+      const data = await blogsApi.post({
+        title: blogTitle,
+        content: blogContent,
+        thumbnail: blogThumbnail,
       });
+      dispatch(
+        appendNotification({
+          message: "Blog Uploaded",
+          color: "success",
+        })
+      );
+      dispatch(appendBlog(data));
+      dispatch(setFormHidden());
+      setBlogTitle("");
+      setBlogContent("");
+      setBlogThumbnail(null);
+    } catch (error) {
+      dispatch(
+        appendNotification({
+          message: error.message,
+          color: "error",
+        })
+      );
+    }
     setUploading(false);
   }
 
   function handleThumbnailChange(event) {
-    const file = event.target.files[0],
-      reader = new FileReader();
-
-    reader.onload = (evt) =>
-      setBlog((prv) => ({ ...prv, thumbnail: evt.target.result }));
-
-    return reader.readAsDataURL(file);
+    const reader = new FileReader();
+    const file = event.target.files[0];
+    reader.onload = (evt) => setBlogThumbnail(evt.target.result);
+    reader.readAsDataURL(file);
   }
 
   return (
@@ -68,32 +64,34 @@ const BlogForm = ({ formVisible }) => {
             onClick={(e) => e.stopPropagation()}
             encType="multipart/form-data"
             onSubmit={uploadBlog}
-            className="w-full bg-white mt-auto rounded-tr-3xl rounded-tl-3xl p-6"
+            className="w-full h-full max-h-[720px] bg-white mt-auto rounded-tr-3xl rounded-tl-3xl p-6 overflow-auto"
           >
             <input
               id="title"
               type="text"
               placeholder="Title"
-              onChange={(e) =>
-                setBlog((prv) => ({ ...prv, title: e.target.value }))
-              }
-              className="block w-full bg-slate-50 outline-none"
+              value={blogTitle}
+              onChange={(e) => setBlogTitle(e.target.value)}
+              className="sticky block w-full px-3 py-2 border-2 outline-none bg-slate-50 rounded-xl border-slate-100 bottom-6"
             />
             <textarea
               id="content"
               cols="30"
               rows="10"
               placeholder="Content"
-              onChange={(e) =>
-                setBlog((prv) => ({ ...prv, content: e.target.value }))
-              }
-              className="block w-full resize-none bg-slate-50 outline-none my-3"
+              value={blogContent}
+              onChange={(e) => setBlogContent(e.target.value)}
+              style={{ formSizing: "content" }}
+              className="block w-full px-3 py-2 my-3 border-2 outline-none resize-none bg-slate-50 rounded-xl border-slate-100"
             />
 
-            <div className={styles.chooseThumbnail}>
-              <label htmlFor="blog-thumbnail">
+            <div className="relative overflow-hidden">
+              <label
+                htmlFor="blog-thumbnail"
+                className="z-50 flex items-center justify-center gap-1 p-2 mb-3 bg-slate-50 rounded-xl"
+              >
                 <IconPhoto />
-                {blog.thumbnail ? "change" : "pick a"} thumbnail
+                {blogThumbnail ? "change" : "pick a"} thumbnail
               </label>
               <input
                 type="file"
@@ -101,23 +99,26 @@ const BlogForm = ({ formVisible }) => {
                 name="thumbnail"
                 id="blog-thumbnail"
                 onChange={handleThumbnailChange}
+                className="absolute inset-0 -z-50"
               />
-              {blog.thumbnail && (
+              {blogThumbnail && (
                 <img
-                  src={blog.thumbnail}
+                  src={blogThumbnail}
                   alt="Thumbnail Preview"
-                  className={styles.thumbnailPreview}
+                  className="mb-3 rounded-xl"
                 />
               )}
             </div>
             <button
               type="submit"
               aria-disabled={
-                !(blog.title.trim() && blog.content.trim()) || uploading
+                !blogTitle.trim() || !blogContent.trim() || uploading
               }
-              aria-label="upload blog"
+              aria-label="Upload blog"
+              className="sticky block w-full p-3 bg-yellow-300 active:scale-95 aria-disabled:active:scale-100 aria-disabled:bg-yellow-100 rounded-xl"
             >
-              {uploading ? <Loader width={18} /> : "upload"}
+              {uploading ? <Loader width={22} /> : <span>Upload</span>}
+              {uploading && <i className="block h-6" />}
             </button>
           </form>
         </Backdrop>

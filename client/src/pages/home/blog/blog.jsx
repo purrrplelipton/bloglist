@@ -1,27 +1,24 @@
-import {
-  IconThumbDownFilled,
-  IconThumbDown,
-  IconThumbUp,
-  IconThumbUpFilled,
-  IconHeart,
-  IconHeartFilled,
-  IconDotsVertical,
-} from "@tabler/icons-react";
-import { HomeContext } from "@pages/home";
 import blogsApi from "@services/blogs";
 import usersApi from "@services/users";
 import { appendNotification } from "@store/reducers/global";
+import { addToFavorites, removeFromFavorites } from "@store/reducers/user";
+import {
+  IconDotsVertical,
+  IconHeart,
+  IconHeartFilled,
+  IconThumbDown,
+  IconThumbDownFilled,
+  IconThumbUp,
+  IconThumbUpFilled,
+} from "@tabler/icons-react";
 import { shape } from "prop-types";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { connect, useDispatch } from "react-redux";
-import { v4 as uuidv4 } from "uuid";
-import styles from "./blog.module.css";
 import { Options } from "./more-options";
-import { removeFromFavorites, addToFavorites } from "@store/reducers/user";
 
-const Blog = ({ user, blog }) => {
+const Blog = ({ user, userDetails, blog }) => {
+  const { favorites } = userDetails;
   const dispatch = useDispatch();
-  const { favorites } = user;
   const [showOptions, setShowOptions] = useState(false);
 
   async function handleFaveToggle() {
@@ -38,7 +35,6 @@ const Blog = ({ user, blog }) => {
             ? "Blog added to favorites"
             : "Blog removed from favorites",
           color: "info",
-          id: uuidv4(),
         })
       );
     } catch (error) {
@@ -46,7 +42,6 @@ const Blog = ({ user, blog }) => {
         appendNotification({
           message: error.message,
           color: "error",
-          id: uuidv4(),
         })
       );
     }
@@ -71,7 +66,6 @@ const Blog = ({ user, blog }) => {
             appendNotification({
               message,
               color: "error",
-              id: uuidv4(),
             })
           )
         );
@@ -94,7 +88,6 @@ const Blog = ({ user, blog }) => {
             appendNotification({
               message: error.message,
               color: "error",
-              id: uuidv4(),
             })
           )
         );
@@ -118,7 +111,6 @@ const Blog = ({ user, blog }) => {
           appendNotification({
             message,
             color: "error",
-            id: uuidv4(),
           })
         );
       }
@@ -141,7 +133,6 @@ const Blog = ({ user, blog }) => {
             appendNotification({
               message: error.message,
               color: "error",
-              id: uuidv4(),
             })
           )
         );
@@ -149,72 +140,76 @@ const Blog = ({ user, blog }) => {
   }
 
   return (
-    <article className={`${styles.blog} blog-${blog.id}`}>
-      <p className={styles.blogTitle}>{blog.title}</p>
-      <div className={styles.blogDoohickeys}>
-        <div className={styles.faveToggleBtn}>
-          <button
-            aria-label={
-              favorites.includes(blog.id)
-                ? "remove from favorites"
-                : "add to favoriites"
-            }
-            onClick={handleFaveToggle}
-            type="button"
-          >
-            {favorites.includes(blog.id) ? <IconHeartFilled /> : <IconHeart />}
-          </button>
-        </div>
-        <div className={styles.moreOptionsWrapper}>
-          <button
-            type="button"
-            aria-label="Show more options"
-            onClick={() => setShowOptions((prv) => !prv)}
-            className={styles.moreOptionsToggle}
-          >
-            <IconDotsVertical />
-          </button>
-          <Options
-            isOpen={showOptions}
-            toggle={setShowOptions}
-            blogId={blog.id}
-            authorId={blog.author.id || blog.author}
-          />
+    <article
+      className={`relative first:mt-24 mb-3 bg-white text-slate-900 rounded-lg border-2 border-slate-100 p-2 blog-${blog.id}`}
+    >
+      <p className="p-1 mb-2 rounded-md bg-slate-50">{blog.title}</p>
+      <>
+        <div className="absolute top-0 right-0 translate-x-1/4 -translate-y-1/4">
+          <div className="relative">
+            <button
+              type="button"
+              aria-label="Show more options"
+              onClick={() => setShowOptions((prv) => !prv)}
+              className="p-1 text-white rounded-full bg-[#a4c83f]"
+            >
+              <IconDotsVertical size={20} />
+            </button>
+            <Options
+              isOpen={showOptions}
+              toggle={setShowOptions}
+              blogId={blog.id}
+              authorId={blog.author}
+            />
+          </div>
         </div>
         {blog.thumbnail && (
           <img
-            className={styles.blogThumbnail}
+            className="my-2 rounded-lg"
             src={blog.thumbnail}
             alt={`thumbnail for blog titled: ${blog.title}`}
           />
         )}
-        <div className={styles.btnWrapper}>
+        <div className="flex items-center">
           <button
             type="button"
-            aria-label={blog.likes.includes(user) ? "Unlike" : "Like"}
-            onClick={handleLikeToggle}
-          >
-            {blog.likes.includes(user) ? (
-              <IconThumbUpFilled />
-            ) : (
-              <IconThumbUp />
-            )}
-          </button>
-          <button
-            type="button"
+            onClick={handleFaveToggle}
             aria-label={
-              blog.dislikes.includes(user) ? "Remove dislike" : "Disike"
+              favorites.includes(blog.id)
+                ? "Remove from favorites"
+                : "Add to favoriites"
             }
-            onClick={handleDislikeToggle}
+            className="p-1 rounded-full"
           >
-            {blog.dislikes.includes(user) ? (
-              <IconThumbDownFilled />
-            ) : (
-              <IconThumbDown />
+            {favorites.includes(blog.id) && (
+              <IconHeartFilled className="text-red-400" />
             )}
+            {!favorites.includes(blog.id) && <IconHeart />}
           </button>
+          <div className="ml-auto">
+            <button
+              type="button"
+              aria-label={blog.likes.includes(user) ? "Unlike" : "Like"}
+              onClick={handleLikeToggle}
+              className="p-1 rounded-full"
+            >
+              {blog.likes.includes(user) && <IconThumbUpFilled />}
+              {!blog.likes.includes(user) && <IconThumbUp />}
+            </button>
+            <button
+              type="button"
+              aria-label={
+                blog.dislikes.includes(user) ? "Remove dislike" : "Dislike"
+              }
+              onClick={handleDislikeToggle}
+              className="p-1 ml-2 rounded-full"
+            >
+              {blog.dislikes.includes(user) && <IconThumbDownFilled />}
+              {!blog.dislikes.includes(user) && <IconThumbDown />}
+            </button>
+          </div>
         </div>
-      </div>
+      </>
     </article>
   );
 };
@@ -223,6 +218,7 @@ Blog.propTypes = { blog: shape({}).isRequired };
 
 const mapStateToProps = (state) => ({
   user: state.global.user,
+  userDetails: state.user,
   blogs: state.home.blogs,
 });
 

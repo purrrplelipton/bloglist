@@ -6,7 +6,6 @@ import { initializeUserInfo } from "@store/reducers/user";
 import { useEffect, useState } from "react";
 import { connect, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
 import { Blog } from "./blog";
 import { BlogForm } from "./blog-form";
 import { Drawer } from "./drawer";
@@ -40,7 +39,6 @@ const Home = ({ blogs, loading }) => {
           appendNotification({
             message: error.message,
             color: "error",
-            id: uuidv4(),
           })
         );
       }
@@ -49,17 +47,17 @@ const Home = ({ blogs, loading }) => {
   }, []);
 
   return (
-    <div role="main" className="">
+    <div role="main">
       <Header />
       <Drawer />
       <section
-        className="min-h-screen px-3 flex flex-col items-stretch"
+        className="flex flex-col items-stretch min-h-screen px-3"
         aria-live="polite"
       >
         {loading && <Loader />}
         {error && <div>{error.message}</div>}
         {!loading && !error && blogs.length === 0 && (
-          <h1 className="text-2xl text-slate-300 text-center m-auto">
+          <h1 className="m-auto text-2xl text-center text-slate-300">
             No blogs right now.
           </h1>
         )}

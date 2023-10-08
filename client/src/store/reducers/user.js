@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import userApi from "@services/users";
+import { appendNotification } from "./global";
 
 const userSlice = createSlice({
   name: "user",
@@ -30,12 +31,13 @@ const userSlice = createSlice({
 export const { addToFavorites, removeFromFavorites, setUserInfo } =
   userSlice.actions;
 export function initializeUserInfo() {
-  return async (dispatch, getState) => {
-    const {
-      global: { user },
-    } = getState();
-    const info = await userApi.get();
-    dispatch(setUserInfo(info));
+  return async (dispatch) => {
+    try {
+      const info = await userApi.get();
+      dispatch(setUserInfo(info));
+    } catch (error) {
+      dispatch(appendNotification({ message: error.message, color: "error" }));
+    }
   };
 }
 export default userSlice.reducer;

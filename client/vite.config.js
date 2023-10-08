@@ -8,6 +8,7 @@ export default defineConfig({
   plugins: [react(), vitePluginSvgr()],
   resolve: {
     alias: {
+      "@src": resolve(__dirname, "src"),
       "@assets": resolve(__dirname, "src/assets"),
       "@components": resolve(__dirname, "src/components"),
       "@contexts": resolve(__dirname, "src/contexts"),

@@ -43,9 +43,9 @@ const blogsApi = {
           "Content-Type": "application/json",
           redirect: "follow",
           referrerPolicy: "no-referrer",
-          body: JSON.stringify(payload),
+          Authorization: token,
         },
-        Authorization: token,
+        body: JSON.stringify(payload),
       });
       if (!response.ok) {
         throw new Error(response.statusText);
@@ -112,13 +112,13 @@ const blogsApi = {
         mode: "cors",
         cache: "no-cache",
         credentials: "same-origin",
-        Authorization: token,
+        headers: {
+          Authorization: token,
+        },
       });
       if (!response.ok) {
         throw new Error(response.statusText);
       }
-      const data = await response.json();
-      return data;
     } catch (error) {
       console.error("Error in DELETE request:", error);
       throw error;

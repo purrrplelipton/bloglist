@@ -9,3 +9,7 @@ body {
   color: #181818;
   background-color: #ffffff;
 }
+
+* {
+  /* outline: 1px solid red; */
+}

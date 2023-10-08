@@ -5,7 +5,6 @@ import { IconMenu, IconUserCircle, IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { connect, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
 import { HeaderContext } from "./";
 import { SearchSection } from "./search";
 
@@ -42,7 +41,6 @@ const Header = ({ showDrawer: drawerVisible, searchParam }) => {
             appendNotification({
               message,
               color: "error",
-              id: uuidv4(),
             })
           );
         });
@@ -55,7 +53,7 @@ const Header = ({ showDrawer: drawerVisible, searchParam }) => {
   return (
     <HeaderContext.Provider value={{ headerStates, headerDispatch }}>
       <header className="fixed top-0 left-0 z-50 w-full px-3 py-5">
-        <div className="flex items-center justify-between w-full max-w-screen-xl p-3 mx-auto rounded-full shadow shadow-gray-300 bg-white">
+        <div className="flex items-center justify-between w-full max-w-screen-xl p-3 mx-auto bg-white rounded-full shadow shadow-gray-300">
           <button
             type="button"
             className="p-1 overflow-hidden rounded-full"
@@ -65,7 +63,7 @@ const Header = ({ showDrawer: drawerVisible, searchParam }) => {
             <IconMenu />
           </button>
           <form
-            className="flex items-center overflow-hidden rounded-md"
+            className="flex items-center overflow-hidden rounded-md focus-within:bg-slate-50"
             onSubmit={handleBlogSearch}
           >
             <input
@@ -81,7 +79,7 @@ const Header = ({ showDrawer: drawerVisible, searchParam }) => {
                 }));
               }}
               placeholder="Search"
-              className="px-2 py-1 outline-none"
+              className="w-full py-1 pl-2 outline-none bg-inherit"
             />
             <button
               type="button"
@@ -92,7 +90,7 @@ const Header = ({ showDrawer: drawerVisible, searchParam }) => {
                   dispatch(setSearchParam(""));
                 }
               }}
-              className="p-1 rounded-md aria-disabled:opacity-10"
+              className="p-1 rounded-md outline-none aria-disabled:opacity-5 focus:bg-slate-100"
             >
               <IconX />
             </button>

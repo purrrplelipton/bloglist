@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { v4 } from "uuid";
 
 const globalSlice = createSlice({
   name: "global",
@@ -13,7 +14,7 @@ const globalSlice = createSlice({
     },
     appendNotification: (state, action) => {
       const { payload } = action;
-      state.notifications.push(payload);
+      state.notifications.push({ ...payload, id: v4() });
     },
     removeNotification: (state, action) => {
       const { payload } = action;

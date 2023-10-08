@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import blogsApi from "@services/blogs";
+import { appendNotification } from "./global";
 
 const home = createSlice({
   name: "home",
@@ -23,7 +24,7 @@ const home = createSlice({
     },
     appendBlog: (state, action) => {
       const { payload } = action;
-      return { ...state, blogs: [...state.blogs, payload] };
+      return { ...state, blogs: [payload, ...state.blogs] };
     },
     setBlogs: (state, action) => {
       const { payload } = action;
@@ -43,15 +44,23 @@ export const {
 export function initializeBlogs() {
   return async (dispatch) => {
     dispatch(startLoading());
-    const blogs = await blogsApi.get();
-    dispatch(setBlogs(blogs));
+    try {
+      const blogs = await blogsApi.get();
+      dispatch(setBlogs(blogs));
+    } catch (error) {
+      dispatch(appendNotification({ message: error.message, color: "error" }));
+    }
     dispatch(stopLoading());
   };
 }
 export function createBlog(blog) {
   return async (dispatch) => {
-    const newBlog = await blogsApi.post(blog);
-    dispatch(appendBlog(newBlog));
+    try {
+      const newBlog = await blogsApi.post(blog);
+      dispatch(appendBlog(newBlog));
+    } catch (error) {
+      dispatch(appendNotification({ message: error.message, color: "error" }));
+    }
   };
 }
 export default home.reducer;

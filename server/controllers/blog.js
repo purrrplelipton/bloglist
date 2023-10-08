@@ -10,10 +10,7 @@ blog.get("/", async function (req, res) {
     const { search } = req.query;
     let query = {};
     if (search) query.title = { $regex: new RegExp(search, "i") };
-    const blogs = await blg
-      .find(query)
-      .sort({ createdAt: -1 })
-      .populate("author", { alias: 1 });
+    const blogs = await blg.find(query).sort({ createdAt: -1 });
 
     res.json(blogs);
   }

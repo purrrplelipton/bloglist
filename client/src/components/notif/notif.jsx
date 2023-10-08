@@ -1,8 +1,7 @@
-import { IconX } from "@tabler/icons-react";
 import { removeNotification } from "@store/reducers/global";
+import { IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { connect, useDispatch } from "react-redux";
-import styles from "./notif.module.css";
 
 const Notif = ({ notifications }) => {
   const dispatch = useDispatch();
@@ -42,7 +41,19 @@ const Notif = ({ notifications }) => {
         {notifications.map(({ message, color, id }) => (
           <div key={id} className="overflow-hidden text-white max-h-52">
             <div
-              className={`max-w-xs max-h-52 py-2 px-3 rounded-md overflow-hidden relative z-50 right-0 left-0 mx-auto flex items-center ${styles[color]}`}
+              className={`max-w-xs max-h-52 py-2 px-3 rounded-md overflow-hidden relative z-50 right-0 left-0 mx-auto flex items-center mb-2 ${
+                color == "secondary"
+                  ? "bg-[#673AB7]"
+                  : color == "info"
+                  ? "bg-[#2196F3]"
+                  : color == "success"
+                  ? "bg-[#4CAF50]"
+                  : color == "warning"
+                  ? "bg-[#FF9800]"
+                  : color == "error"
+                  ? "bg-[#F44336]"
+                  : "bg-slate-900"
+              }`}
             >
               <p>{message}</p>
               <button

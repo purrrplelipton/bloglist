@@ -1,70 +1,61 @@
-import { Edit, Share, Trash } from "@assets/vectors/tabler-icons";
-import { HomeContext } from "@pages/home";
 import blogsApi from "@services/blogs";
-import PropTypes from "prop-types";
-import { useContext, useEffect, useState } from "react";
+import { appendNotification } from "@store/reducers/global";
+import { setBlogs } from "@store/reducers/home";
+import { IconEdit, IconShare, IconTrash } from "@tabler/icons-react";
+import { bool, func, string } from "prop-types";
+import { useEffect, useState } from "react";
 import { connect, useDispatch } from "react-redux";
-import { v4 as uuidv4 } from "uuid";
-import styles from "./more-options.module.css";
+import { v4 } from "uuid";
 
-const Options = ({ user, isOpen, toggle, blogId, authorId }) => {
+const Options = (props) => {
+  const { user, isOpen, toggle, blogId, authorId, blogs } = props;
   const dispatch = useDispatch();
-  const { homeDispatch } = useContext(HomeContext);
   const [isAuthor, setIsAuthor] = useState(false);
 
   useEffect(() => {
-    if (user === authorId) setIsAuthor(true);
-    else setIsAuthor(false);
+    if (user === authorId) return setIsAuthor(true);
+    setIsAuthor(false);
   }, [user, authorId]);
 
-  function handleBlogDeletion() {
+  async function handleBlogDeletion() {
     toggle(false);
-    blogsApi
-      .delete(blogId)
-      .then(() => {
-        homeDispatch((prv) => ({
-          ...prv,
-          blogs: prv.blogs.filter((blog) => blog.id !== blogId),
-        }));
-        dispatch(
-          appendNotification({
-            message: "Blog has been deleted.",
-            color: "error",
-            id: uuidv4(),
-          })
-        );
-      })
-      .catch(({ message }) =>
-        dispatch(
-          appendNotification({
-            message,
-            color: "error",
-            id: uuidv4(),
-          })
-        )
+    try {
+      await blogsApi.delete(blogId);
+      console.log(response);
+      dispatch(setBlogs(blogs.filter((blog) => blog.id !== blogId)));
+      dispatch(
+        appendNotification({
+          message: "Blog has been deleted.",
+          color: "warning",
+        })
       );
+    } catch (error) {
+      dispatch(
+        appendNotification({
+          message: error.message,
+          color: "error",
+        })
+      );
+    }
   }
 
   const options = {
     general: [
       {
-        id: uuidv4(),
-        clickFunc: function () {},
-        icon: <Share />,
+        clicked: () => {},
+        icon: <IconShare size={20} />,
         label: "Share",
       },
     ],
     protected: [
       {
-        id: uuidv4(),
-        clickFunc: function () {},
-        icon: <Edit />,
+        clicked: () => {},
+        icon: <IconEdit size={20} />,
         label: "Edit",
       },
       {
-        id: uuidv4(),
-        clickFunc: handleBlogDeletion,
-        icon: <Trash />,
+        clicked: handleBlogDeletion,
+        icon: <IconTrash size={20} />,
         label: "Delete",
       },
     ],
@@ -72,30 +63,33 @@ const Options = ({ user, isOpen, toggle, blogId, authorId }) => {
 
   return (
     isOpen && (
-      <div className={styles.optionsWrapper} role="combobox">
-        {options.general.map(({ id, clickFunc, icon, label }) => (
+      <div
+        className="absolute min-w-fit top-full right-1/2 translate-y-1 bg-[#f9e0bd] rounded-lg py-2 flex flex-col items-stretch text-sm"
+        role="combobox"
+      >
+        {options.general.map(({ clicked, icon, label }) => (
           <button
-            key={id}
+            key={v4()}
             role="option"
-            className={styles.option}
+            className="py-[2px] px-[6px] flex items-center gap-1"
             type="button"
-            onClick={clickFunc}
+            onClick={clicked}
           >
             {icon}
-            <span>{label}</span>
+            <span className="mr-2">{label}</span>
           </button>
         ))}
         {isAuthor &&
-          options.protected.map(({ id, clickFunc, icon, label }) => (
+          options.protected.map(({ clicked, icon, label }) => (
             <button
-              key={id}
+              key={v4()}
               role="option"
-              className={styles.option}
+              className="py-[2px] px-[6px] flex items-center gap-1"
               type="button"
-              onClick={clickFunc}
+              onClick={clicked}
             >
               {icon}
-              <span>{label}</span>
+              <span className="mr-2">{label}</span>
             </button>
           ))}
       </div>
@@ -104,10 +98,10 @@ const Options = ({ user, isOpen, toggle, blogId, authorId }) => {
 };
 
 Options.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  toggle: PropTypes.func.isRequired,
-  authorId: PropTypes.string.isRequired,
-  blogId: PropTypes.string.isRequired,
+  isOpen: bool.isRequired,
+  toggle: func.isRequired,
+  authorId: string.isRequired,
+  blogId: string.isRequired,
 };
 
 const mapStateToProps = (state) => ({ user: state.global.user });

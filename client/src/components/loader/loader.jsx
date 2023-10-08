@@ -1,18 +1,17 @@
 import { element, node, number, oneOfType, string } from "prop-types";
-
 import styles from "./loader.module.css";
 
 const Loader = (props) => {
   const { children, width } = props;
 
   return (
-    <>
+    <div className="absolute flex flex-col items-stretch justify-center text-center -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
       <span
         style={{ width }}
-        className={`${styles["l-root"]} block mx-auto`}
+        className={`${styles["l-root"]} mx-auto`}
         role="progressbar"
       >
-        <svg className="block" viewBox="22 22 44 44">
+        <svg viewBox="22 22 44 44">
           <circle
             className={`${styles["l-circle"]} stroke-current`}
             cx={44}
@@ -20,11 +19,11 @@ const Loader = (props) => {
             r={20.2}
             fill={"none"}
             strokeWidth={3.6}
-          ></circle>
+          />
         </svg>
       </span>
-      {children && <div className="text-center">{children}</div>}
-    </>
+      {children && <div>{children}</div>}
+    </div>
   );
 };
 

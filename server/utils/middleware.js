@@ -4,19 +4,19 @@ import { SECRET } from "./config.js";
 const { verify } = pkg;
 
 export const UnknownEndpoint = (_, res) =>
-  res.status(404).send({ error: "Unknown Endpoint" });
+  res.status(404).send({ message: "Unknown Endpoint" });
 
 export function ErrHandler(err, _, res, nxt) {
   console.log(err.message);
 
   if (err.name === "CastError" && err.kind === "ObjectId")
-    return res.status(400).send({ error: "malformatted id" });
+    return res.status(400).send({ message: "malformatted id" });
   else if (err.name === "ValidationError")
-    return res.status(400).json({ error: err.message });
+    return res.status(400).json({ message: err.message });
   else if (err.name === "JsonWebTokenError")
-    return res.status(401).json({ error: "invalid token" });
+    return res.status(401).json({ message: "invalid token" });
   else if (err.name === "TokenExpiredError")
-    return res.status(401).json({ error: "token expired" });
+    return res.status(401).json({ message: "token expired" });
 
   nxt(err);
 }
