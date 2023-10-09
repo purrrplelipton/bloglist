@@ -1,39 +1,40 @@
 import { IconX } from "@tabler/icons-react";
-import { bool, element, func, node, oneOfType, string } from "prop-types";
+import { bool, func } from "prop-types";
 
-const Backdrop = ({ isOpen, onClose, children }) => {
+const Backdrop = (props) => {
+  const { isOpen, onClose, ...rest } = props;
+
   return (
     isOpen && (
       <div
-        className="fixed top-0 right-0 bottom-0 left-0 z-50 bg-[#0001] backdrop-blur-sm flex items-center justify-center"
+        className={`${
+          rest.fixed ? "absolute" : "fixed"
+        } top-0 right-0 bottom-0 left-0 z-50 bg-black bg-opacity-5 backdrop-blur-sm`}
         onClick={onClose}
         role="presentation"
       >
-        <button
-          type="button"
-          aria-label="Close form"
-          className="absolute top-0 right-0 p-1 -translate-x-6 translate-y-8 rounded-full"
-          onClick={(e) => {
-            e.stopPropagation();
-            onClose();
-          }}
-        >
-          <IconX />
-        </button>
-        {children}
+        <div className="relative flex items-center justify-center h-full">
+          <button
+            type="button"
+            aria-label="Close form"
+            className="absolute top-0 right-0 p-1 -translate-x-6 translate-y-8 rounded-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
+          >
+            <IconX />
+          </button>
+          {rest.children}
+        </div>
       </div>
     )
   );
 };
 
-Backdrop.defaultProps = {
-  children: null,
-};
-
 Backdrop.propTypes = {
   isOpen: bool.isRequired,
   onClose: func.isRequired,
-  children: oneOfType([node, element, string]),
 };
 
 export default Backdrop;

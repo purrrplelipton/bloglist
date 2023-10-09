@@ -8,21 +8,20 @@ import { connect, useDispatch } from "react-redux";
 import { v4 } from "uuid";
 
 const Options = (props) => {
-  const { user, isOpen, toggle, blogId, authorId, blogs } = props;
+  const { isOpen, toggle, blogId, authorId, ...rest } = props;
   const dispatch = useDispatch();
   const [isAuthor, setIsAuthor] = useState(false);
 
   useEffect(() => {
-    if (user === authorId) return setIsAuthor(true);
+    if (rest.user === authorId) return setIsAuthor(true);
     setIsAuthor(false);
-  }, [user, authorId]);
+  }, [rest.user, authorId]);
 
   async function handleBlogDeletion() {
     toggle(false);
     try {
       await blogsApi.delete(blogId);
-      console.log(response);
-      dispatch(setBlogs(blogs.filter((blog) => blog.id !== blogId)));
+      dispatch(setBlogs(rest.blogs.filter((blog) => blog.id !== blogId)));
       dispatch(
         appendNotification({
           message: "Blog has been deleted.",
@@ -64,7 +63,7 @@ const Options = (props) => {
   return (
     isOpen && (
       <div
-        className="absolute min-w-fit top-full right-1/2 translate-y-1 bg-[#f9e0bd] rounded-lg py-2 flex flex-col items-stretch text-sm"
+        className="absolute z-50 min-w-fit top-full right-1/2 translate-y-1 bg-stable-hay rounded-lg py-2 flex flex-col items-stretch text-sm"
         role="combobox"
       >
         {options.general.map(({ clicked, icon, label }) => (
@@ -104,6 +103,9 @@ Options.propTypes = {
   blogId: string.isRequired,
 };
 
-const mapStateToProps = (state) => ({ user: state.global.user });
+const mapStateToProps = (state) => ({
+  user: state.global.user,
+  blogs: state.home.blogs,
+});
 
 export default connect(mapStateToProps)(Options);

@@ -22,13 +22,8 @@ const usersApi = {
     try {
       const response = await fetch(resourceUrl, {
         method: "POST",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
         headers: {
           "Content-Type": "application/json",
-          redirect: "follow",
-          referrerPolicy: "no-referrer",
         },
         body: JSON.stringify(payload),
       });
@@ -42,13 +37,10 @@ const usersApi = {
       throw error;
     }
   },
-  patch: async (id, payload) => {
+  patch: async (payload) => {
     try {
-      const response = await fetch(`${baseurl}/${id}`, {
+      const response = await fetch(resourceUrl, {
         method: "PATCH",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
         headers: {
           "Content-Type": "application/json",
           Authorization: token,
@@ -69,13 +61,8 @@ const usersApi = {
     try {
       const response = await fetch(`${resourceUrl}/${id}`, {
         method: "PUT",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
         headers: {
           "Content-Type": "application/json",
-          redirect: "follow",
-          referrerPolicy: "no-referrer",
           Authorization: token,
         },
         body: JSON.stringify(payload),
@@ -94,9 +81,6 @@ const usersApi = {
     try {
       const response = await fetch(`${resourceUrl}/${id}`, {
         method: "DELETE",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
         headers: {
           Authorization: token,
         },

@@ -10,6 +10,7 @@ const Loader = (props) => {
         style={{ width }}
         className={`${styles["l-root"]} mx-auto`}
         role="progressbar"
+        title="Please wait while a request is being processed."
       >
         <svg viewBox="22 22 44 44">
           <circle

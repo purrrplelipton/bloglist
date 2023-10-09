@@ -10,21 +10,6 @@ const userSlice = createSlice({
       const { payload } = action;
       return payload;
     },
-    addToFavorites: (state, action) => {
-      const { payload } = action;
-      const id = state.favorites.findIndex(payload);
-      if (id === -1) {
-        state.favorites.push(id);
-      }
-    },
-    removeFromFavorites: (state, action) => {
-      const { payload } = action;
-      const id = state.favorites.findIndex(payload);
-      if (id !== -1) {
-        const newFaves = state.favorites.filter((blogID) => blogID !== payload);
-        state.favorites = newFaves;
-      }
-    },
   },
 });
 

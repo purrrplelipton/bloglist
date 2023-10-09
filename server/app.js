@@ -13,18 +13,20 @@ import {
   userExtractor,
 } from "./utils/middleware.js";
 
-(async function connect() {
-  console.log("connecting to MongoDB...");
-  try {
-    await mongoose.connect(MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log("connected to MongoDB");
-  } catch (exception) {
-    console.error("error connecting to MongoDB:", exception);
-  }
-})();
+console.log("connecting to MongoDB...");
+try {
+  mongoose.connect(MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+  console.log("connected to MongoDB");
+} catch (error) {
+  console.error("error connecting to MongoDB:", error.message);
+}
+
+process.on("unhandledRejection", (error) => {
+  console.log("Unhandled Rejection:", error.message);
+});
 
 mongoose.set("strictQuery", true);
 mongoose.set("runValidators", true);
@@ -33,9 +35,10 @@ const app = express();
 
 app.use(cors());
 app.use(express.static("dist"));
-app.use(express.json({ limit: "10MB" }));
+app.use("/hotcakes", express.static("hotcakes"));
+app.use(express.json({ limit: "16MB" }));
 app.use(express.urlencoded({ extended: false }));
-app.use(morgan("tiny"));
+app.use(morgan("dev"));
 
 app.use(tokenExtractor);
 

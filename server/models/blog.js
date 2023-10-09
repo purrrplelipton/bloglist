@@ -15,7 +15,6 @@ const BlogSchema = new Schema(
     thumbnail: {
       type: String,
       required: true,
-      trim: true,
     },
     author: {
       type: Schema.Types.ObjectId,

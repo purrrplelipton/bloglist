@@ -10,6 +10,11 @@ body {
   background-color: #ffffff;
 }
 
+body.restrict {
+  height: 100vh;
+  overflow: hidden;
+}
+
 * {
   /* outline: 1px solid red; */
 }
