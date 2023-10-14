@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root,
+body {
+  height: 100%;
+  font-family: AR One Sans, sans-serif;
+  color: #181818;
+  background-color: #ffffff;
+}
+
+body.restrict {
+  height: 100vh;
+  overflow: hidden;
+}
+
+* {
+  /* outline: 1px solid red; */
+}
