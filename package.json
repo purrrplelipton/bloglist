@@ -1,24 +1,13 @@
 {
-  "name": "digitalchronicles",
+  "name": "dgchronicles",
   "version": "1.0.0",
-  "author": {
-    "name": "Emmanuel O. Adeyeye"
-  },
-  "repository": {
-    "url": "https://github.com/purrrplelipton/bloglist"
-  },
   "private": "true",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "concurrently \"pnpm run server:dev\" \"pnpm run client:dev\"",
-    "server:dev": "cd server && pnpm run dev",
-    "client:dev": "cd client && pnpm run dev",
-    "server": "cd server && pnpm run start",
-    "client": "cd client && pnpm run start",
-    "build": "cd client && npx rimraf dist && pnpm run build && cd ../server && npx rimraf dist && cd ../client && mv dist ../server"
-  },
-  "dependencies": {
-    "concurrently": "^8.2.0",
-    "rimraf": "^5.0.1"
-  },
-  "license": "MIT"
+    "api:dev": "yarn workspace @dgchronicles/dev",
+    "ui:dev": "yarn workspace @dgchronicles/ui start",
+    "dev": "concurrently \"yarn api:dev\" \"yarn ui:dev\""
+  }
 }

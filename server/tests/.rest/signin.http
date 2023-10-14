@@ -1,8 +1,0 @@
-POST http://localhost:3000/api/sign-in/ HTTP/1.1
-Content-Type: application/json
-
-{
-    "email$aias": "olufemiptr71@gmail.com",
-    "password": "olufemipeter",
-    "rememberMe": false
-}
