@@ -12,9 +12,13 @@
     "dev:ui": "yarn workspace @dgchronicles/ui start",
     "dev": "NODE_ENV=development concurrently --kill-others-on-fail \"yarn dev:api\" \"yarn dev:ui\"",
     "test:ui": "yarn workspace @dgchronicles/ui test",
-    "start": "NODE_ENV=production yarn workspace @dgchronicles/api start"
+    "start": "NODE_ENV=production yarn workspace @dgchronicles/api start",
+    "build": "cd packages/ui && yarn build && mv build ../api && cd .."
   },
   "devDependencies": {
     "concurrently": "^8.2.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
