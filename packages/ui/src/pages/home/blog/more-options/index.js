@@ -1,3 +1,3 @@
-import Options from "./more-options";
+import Options from "./more-options"
 
-export default Options;
+export default Options

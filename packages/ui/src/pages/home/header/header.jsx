@@ -1,58 +1,50 @@
-import { IconMenu, IconUserCircle, IconX } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
-import { connect, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
-import blogsApi from "services/blogs";
-import { setSearchParam, showDrawer } from "store/reducers/common";
-import { appendNotification } from "store/reducers/global";
-import { HeaderContext } from ".";
-import { SearchSection } from "./search";
+import { IconMenu, IconUserCircle, IconX } from "@tabler/icons-react"
+import { bool, string } from "prop-types"
+import React, { useCallback, useEffect } from "react"
+import { connect, useDispatch } from "react-redux"
+import { Link } from "react-router-dom"
+import blogsApi from "services/blogs"
+import {
+  setSearchParam,
+  setSearchResults,
+  setSearching,
+  showDrawer,
+} from "store/reducers/common"
+import { appendNotification } from "store/reducers/global"
+import { SearchSection } from "./search"
 
-const Header = ({ showDrawer: drawerVisible, searchParam }) => {
-  const dispatch = useDispatch();
-  const [headerStates, headerDispatch] = useState({
-    fetching: false,
-    results: [],
-  });
-  const [searchDelay, setSearchDelay] = useState(null);
+const Header = ({ showDrawer: drawerVisible, searchParam, searching }) => {
+  const dispatch = useDispatch()
+
+  const blogSearchHandler = useCallback(() => {
+    if (!searchParam.trim()) return dispatch(setSearchResults([]))
+
+    setTimeout(async () => {
+      dispatch(setSearching(true))
+      try {
+        const results = await blogsApi.get("/", searchParam)
+        dispatch(setSearchResults(results))
+      } catch (error) {
+        dispatch(
+          appendNotification({
+            message: error.message,
+            color: "error",
+          }),
+        )
+      }
+      dispatch(setSearching(false))
+    }, 1800)
+  }, [dispatch, searchParam])
 
   useEffect(() => {
     if (searchParam) {
-      if (searchDelay) {
-        clearTimeout(searchDelay);
-      }
-      const delayTimer = setTimeout(() => {
-        handleBlogSearch();
-      }, 1000);
-
-      setSearchDelay(delayTimer);
+      blogSearchHandler()
     }
-  }, [searchParam]);
-
-  function handleBlogSearch() {
-    headerDispatch((prv) => ({ ...prv, fetching: true }));
-
-    if (searchParam.trim()) {
-      blogsApi
-        .get("/", searchParam)
-        .then((blogs) => headerDispatch((prv) => ({ ...prv, results: blogs })))
-        .catch(({ message }) => {
-          dispatch(
-            appendNotification({
-              message,
-              color: "error",
-            })
-          );
-        });
-      headerDispatch((prv) => ({ ...prv, fetching: false }));
-      return;
-    }
-    headerDispatch((prv) => ({ ...prv, results: [] }));
-  }
+  }, [blogSearchHandler, searchParam])
 
   return (
-    <HeaderContext.Provider value={{ headerStates, headerDispatch }}>
-      <header className="fixed top-0 left-0 z-50 w-full px-3 py-5">
+    <>
+      <header className="fixed top-0 left-0 z-[100] w-full px-3 py-5">
         <div className="flex items-center justify-between w-full max-w-screen-xl p-3 mx-auto bg-white rounded-full shadow shadow-gray-300">
           <button
             type="button"
@@ -64,19 +56,16 @@ const Header = ({ showDrawer: drawerVisible, searchParam }) => {
           </button>
           <form
             className="flex items-center overflow-hidden rounded-md focus-within:bg-slate-50"
-            onSubmit={handleBlogSearch}
+            onSubmit={blogSearchHandler}
           >
             <input
               type="text"
               id="blog-search"
               value={searchParam}
               onChange={(e) => {
-                const { value } = e.target;
-                dispatch(setSearchParam(value));
-                headerDispatch((prv) => ({
-                  ...prv,
-                  fetching: Boolean(value),
-                }));
+                const { value } = e.target
+                dispatch(setSearchParam(value))
+                dispatch(setSearching(Boolean(value)))
               }}
               placeholder="Search"
               className="w-full py-1 pl-2 outline-none bg-inherit"
@@ -84,10 +73,10 @@ const Header = ({ showDrawer: drawerVisible, searchParam }) => {
             <button
               type="button"
               aria-label="Clear"
-              aria-disabled={!searchParam || headerStates.fetching}
+              aria-disabled={!searchParam || searching}
               onClick={() => {
-                if (searchParam && !headerStates.fetching) {
-                  dispatch(setSearchParam(""));
+                if (searchParam && !searching) {
+                  dispatch(setSearchParam(""))
                 }
               }}
               className="p-1 rounded-md outline-none aria-disabled:opacity-5 focus:bg-slate-100"
@@ -105,13 +94,21 @@ const Header = ({ showDrawer: drawerVisible, searchParam }) => {
         </div>
       </header>
       {searchParam.trim() && <SearchSection />}
-    </HeaderContext.Provider>
-  );
-};
+    </>
+  )
+}
+
+Header.propTypes = {
+  searchParam: string.isRequired,
+  searching: bool.isRequired,
+  showDrawer: bool.isRequired,
+}
 
 const mapStateToProps = (state) => ({
   searchParam: state.common.searchParam,
+  searchResults: state.common.searchResults,
   showDrawer: state.common.showDrawer,
-});
+  searching: state.common.searching,
+})
 
-export default connect(mapStateToProps)(Header);
+export default connect(mapStateToProps)(Header)

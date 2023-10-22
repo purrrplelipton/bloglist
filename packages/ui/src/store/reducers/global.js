@@ -1,5 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { v4 } from "uuid";
+import { createSlice } from "@reduxjs/toolkit"
+import { v4 } from "uuid"
 
 const globalSlice = createSlice({
   name: "global",
@@ -9,28 +9,28 @@ const globalSlice = createSlice({
   },
   reducers: {
     setUser: (state, action) => {
-      const { payload } = action;
-      state.user = payload;
+      const { payload } = action
+      state.user = payload
     },
     appendNotification: (state, action) => {
-      const { payload } = action;
-      state.notifications.push({ ...payload, id: v4() });
+      const { payload } = action
+      state.notifications.unshift({ ...payload, id: v4() })
     },
     removeNotification: (state, action) => {
-      const { payload } = action;
+      const { payload } = action
       const notification = state.notifications.find(
-        (notification) => notification.id === payload
-      );
+        (notification) => notification.id === payload,
+      )
       if (notification) {
         const newNotifications = state.notifications.filter(
-          (notification) => notification.id !== payload
-        );
-        state.notifications = newNotifications;
+          (notification) => notification.id !== payload,
+        )
+        state.notifications = newNotifications
       }
     },
   },
-});
+})
 
 export const { setUser, appendNotification, removeNotification } =
-  globalSlice.actions;
-export default globalSlice.reducer;
+  globalSlice.actions
+export default globalSlice.reducer

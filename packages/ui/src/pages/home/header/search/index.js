@@ -1,1 +1,1 @@
-export { default as SearchSection } from "./search";
+export { default as SearchSection } from "./search"

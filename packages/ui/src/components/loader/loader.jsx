@@ -1,8 +1,9 @@
-import { element, node, number, oneOfType, string } from "prop-types";
-import styles from "./loader.module.css";
+import { element, node, number, oneOfType, string } from "prop-types"
+import styles from "./loader.module.css"
+import React from "react"
 
 const Loader = (props) => {
-  const { children, width } = props;
+  const { children, width } = props
 
   return (
     <div className="absolute flex flex-col items-stretch justify-center text-center -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
@@ -25,17 +26,17 @@ const Loader = (props) => {
       </span>
       {children && <div>{children}</div>}
     </div>
-  );
-};
+  )
+}
 
 Loader.defaultProps = {
   width: 48,
   children: null,
-};
+}
 
 Loader.propTypes = {
   width: number,
-  text: oneOfType([string, node, element]),
-};
+  children: oneOfType([string, node, element]),
+}
 
-export default Loader;
+export default Loader

@@ -1,2 +1,3 @@
-export { default as Header } from "./header";
-export { default as HeaderContext } from "./header-context";
+import Header from "./header"
+
+export default Header

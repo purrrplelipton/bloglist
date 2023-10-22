@@ -1,1 +1,1 @@
-export { default as signOutHandler } from "./signOut-handler";
+export { default as signOutHandler } from "./signOut-handler"

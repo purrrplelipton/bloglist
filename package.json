@@ -1,13 +1,20 @@
 {
   "name": "dgchronicles",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": "true",
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "api:dev": "yarn workspace @dgchronicles/dev",
-    "ui:dev": "yarn workspace @dgchronicles/ui start",
-    "dev": "concurrently \"yarn api:dev\" \"yarn ui:dev\""
+    "format:ui": "yarn workspace @dgchronicles/ui format",
+    "lint:ui": "yarn workspace @dgchronicles/ui lint",
+    "dev:api": "yarn workspace @dgchronicles/api dev",
+    "dev:ui": "yarn workspace @dgchronicles/ui start",
+    "dev": "NODE_ENV=development concurrently --kill-others-on-fail \"yarn dev:api\" \"yarn dev:ui\"",
+    "test:ui": "yarn workspace @dgchronicles/ui test",
+    "start": "NODE_ENV=production yarn workspace @dgchronicles/api start"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.1"
   }
 }

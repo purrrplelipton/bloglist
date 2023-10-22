@@ -1,57 +1,55 @@
-import { IconPhoto } from "@tabler/icons-react";
-import Backdrop from "components/backdrop";
-import Loader from "components/loader";
-import { useState } from "react";
-import { connect, useDispatch } from "react-redux";
-import blogsApi from "services/blogs";
-import { appendNotification } from "store/reducers/global";
-import { appendBlog, setFormHidden } from "store/reducers/home";
+import { IconPhoto } from "@tabler/icons-react"
+import Backdrop from "components/backdrop"
+import Loader from "components/loader"
+import { bool } from "prop-types"
+import React, { useState } from "react"
+import { connect, useDispatch } from "react-redux"
+import blogsApi from "services/blogs"
+import { appendNotification } from "store/reducers/global"
+import { appendBlog, setFormHidden } from "store/reducers/home"
 
 const BlogForm = ({ formVisible }) => {
-  const dispatch = useDispatch();
-  const [blogThumbnail, setBlogThumbnail] = useState(null);
-  const [uploading, setUploading] = useState(false);
+  const dispatch = useDispatch()
+  const [blogThumbnail, setBlogThumbnail] = useState(null)
+  const [uploading, setUploading] = useState(false)
 
   async function uploadBlog(e) {
-    e.preventDefault();
+    e.preventDefault()
     if (!blogThumbnail || !e.target.title.value || !e.target.content.value)
-      return;
-    const blog = new FormData();
-    console.log(blog);
-    blog.append("title", e.target.title.value);
-    blog.append("content", e.target.content.value);
-    blog.append("thumbnail", blogThumbnail);
-    setUploading(true);
+      return
+    const blog = new FormData()
+    blog.append("title", e.target.title.value)
+    blog.append("content", e.target.content.value)
+    blog.append("thumbnail", blogThumbnail)
+    setUploading(true)
     try {
-      console.log(blog);
-      const response = await blogsApi.post(blog);
+      const response = await blogsApi.post(blog)
       dispatch(
         appendNotification({
           message: "Blog Uploaded",
           color: "success",
-        })
-      );
-      dispatch(appendBlog(response));
-      dispatch(setFormHidden());
-      setBlogThumbnail(null);
+        }),
+      )
+      dispatch(appendBlog(response))
+      dispatch(setFormHidden())
+      setBlogThumbnail(null)
     } catch (error) {
       dispatch(
         appendNotification({
           message: error.message,
           color: "error",
-        })
-      );
+        }),
+      )
     }
-    setUploading(false);
+    setUploading(false)
   }
 
   function handleThumbnailChange(event) {
     // const reader = new FileReader();
-    const thumbnail = event.target.files[0];
+    const thumbnail = event.target.files[0]
     // reader.onload = (evt) => setBlogThumbnail(evt.target.result);
     // reader.readAsDataURL(file);
-    setBlogThumbnail(thumbnail);
-    console.log(blogThumbnail);
+    setBlogThumbnail(thumbnail)
   }
 
   return (
@@ -59,7 +57,10 @@ const BlogForm = ({ formVisible }) => {
       <>
         <Backdrop
           isOpen={formVisible}
-          onClose={() => dispatch(setFormHidden())}
+          onClose={() => {
+            dispatch(setFormHidden())
+            setUploading(false)
+          }}
         >
           <form
             onClick={(e) => e.stopPropagation()}
@@ -118,9 +119,13 @@ const BlogForm = ({ formVisible }) => {
         </Backdrop>
       </>
     )
-  );
-};
+  )
+}
 
-const mapStateToProps = (state) => ({ formVisible: state.home.formVisible });
+BlogForm.propTypes = {
+  formVisible: bool.isRequired,
+}
 
-export default connect(mapStateToProps)(BlogForm);
+const mapStateToProps = (state) => ({ formVisible: state.home.formVisible })
+
+export default connect(mapStateToProps)(BlogForm)

@@ -1,3 +1,3 @@
-import Notif from "./notif";
+import Notif from "./notif"
 
-export default Notif;
+export default Notif

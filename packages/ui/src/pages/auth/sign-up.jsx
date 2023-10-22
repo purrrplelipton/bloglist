@@ -1,28 +1,28 @@
-import { IconEye, IconEyeOff } from "@tabler/icons-react";
-import Loader from "components/loader";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import usersApi from "services/users";
-import { appendNotification } from "store/reducers/global";
+import { IconEye, IconEyeOff } from "@tabler/icons-react"
+import Loader from "components/loader"
+import React, { useState } from "react"
+import { useDispatch } from "react-redux"
+import { Link, useNavigate } from "react-router-dom"
+import usersApi from "services/users"
+import { appendNotification } from "store/reducers/global"
 
 const SignUp = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [passwordVisible, setPasswordVisibilty] = useState(false);
-  const [creatingAccount, setAccountCreationState] = useState(false);
-  const [acceptedToS, setAcceptedToS] = useState(false);
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const [passwordVisible, setPasswordVisibilty] = useState(false)
+  const [creatingAccount, setAccountCreationState] = useState(false)
+  const [acceptedToS, setAcceptedToS] = useState(false)
 
   async function submitDetails(e) {
-    e.preventDefault();
+    e.preventDefault()
     if (
       !e.target.firstname.value.trim() ||
       !e.target.lastname.value.trim() ||
       !e.target.email.value.trim() ||
       !e.target.password.value.trim()
     )
-      return;
-    setAccountCreationState(true);
+      return
+    setAccountCreationState(true)
     try {
       await usersApi.post({
         name: {
@@ -31,23 +31,23 @@ const SignUp = () => {
         },
         email: e.target.email.value,
         password: e.target.password.value,
-      });
+      })
       dispatch(
         appendNotification({
           message: "Account created successfully",
           color: "success",
-        })
-      );
-      navigate("/sign-in", { replace: true });
+        }),
+      )
+      navigate("/sign-in", { replace: true })
     } catch (error) {
       dispatch(
         appendNotification({
           message: error.message,
           color: "error",
-        })
-      );
+        }),
+      )
     }
-    setAccountCreationState(false);
+    setAccountCreationState(false)
   }
 
   return (
@@ -93,7 +93,7 @@ const SignUp = () => {
           <button
             type="button"
             onClick={() => {
-              setPasswordVisibilty((previousState) => !previousState);
+              setPasswordVisibilty((previousState) => !previousState)
             }}
             aria-label={passwordVisible ? "Hide password" : "Show password"}
             className="p-2 outline-none focus:bg-slate-100"
@@ -127,7 +127,7 @@ const SignUp = () => {
         </Link>
       </p>
     </div>
-  );
-};
+  )
+}
 
-export default SignUp;
+export default SignUp

@@ -1,1 +1,1 @@
-export { default as BlogForm } from "./blog-form";
+export { default as BlogForm } from "./blog-form"

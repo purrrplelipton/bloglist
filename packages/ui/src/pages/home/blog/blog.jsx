@@ -6,26 +6,27 @@ import {
   IconThumbDownFilled,
   IconThumbUp,
   IconThumbUpFilled,
-} from "@tabler/icons-react";
-import Loader from "components/loader";
-import { useState } from "react";
-import { connect, useDispatch } from "react-redux";
-import blogsApi from "services/blogs";
-import usersApi from "services/users";
-import { appendNotification } from "store/reducers/global";
-import { setBlogs } from "store/reducers/home";
-import { setUserInfo } from "store/reducers/user";
-import Options from "./more-options";
+} from "@tabler/icons-react"
+import Loader from "components/loader"
+import { shape, string } from "prop-types"
+import React, { useState } from "react"
+import { connect, useDispatch } from "react-redux"
+import blogsApi from "services/blogs"
+import usersApi from "services/users"
+import { appendNotification } from "store/reducers/global"
+import { setBlogs } from "store/reducers/home"
+import { setUserInfo } from "store/reducers/user"
+import Options from "./more-options"
 
 const Blog = (props) => {
-  const dispatch = useDispatch();
-  const [showOptions, setShowOptions] = useState(false);
-  const [workingFavoritism, setWorkingFavoritism] = useState(false);
-  const [workingLike, setWorkingLike] = useState(false);
-  const [workingDislike, setWorkingDislike] = useState(false);
-  const { user: userID, userDetails, ...rest } = props;
-  const { favorites } = userDetails;
-  const { likes: blogLikes, id: blogID, dislikes: blogDislikes } = rest.blog;
+  const dispatch = useDispatch()
+  const [showOptions, setShowOptions] = useState(false)
+  const [workingFavoritism, setWorkingFavoritism] = useState(false)
+  const [workingLike, setWorkingLike] = useState(false)
+  const [workingDislike, setWorkingDislike] = useState(false)
+  const { user: userID, userDetails, ...rest } = props
+  const { favorites } = userDetails
+  const { likes: blogLikes, id: blogID, dislikes: blogDislikes } = rest.blog
 
   async function handleFaveToggle() {
     if (workingFavoritism) {
@@ -33,35 +34,35 @@ const Blog = (props) => {
         appendNotification({
           message: "A process is still ongoing...",
           color: "warning",
-        })
-      );
-      return;
+        }),
+      )
+      return
     }
-    setWorkingFavoritism(true);
+    setWorkingFavoritism(true)
     try {
       const updatedUser = await usersApi.patch({
         favorites: favorites.includes(blogID)
           ? favorites.filter((blog$ID) => blog$ID !== blogID)
           : [...favorites, blogID],
-      });
-      dispatch(setUserInfo(updatedUser));
+      })
+      dispatch(setUserInfo(updatedUser))
       dispatch(
         appendNotification({
           message: updatedUser.favorites.includes(blogID)
             ? "Blog added to favorites"
             : "Blog removed from favorites",
           color: "info",
-        })
-      );
+        }),
+      )
     } catch (error) {
       dispatch(
         appendNotification({
           message: error.message,
           color: "error",
-        })
-      );
+        }),
+      )
     }
-    setWorkingFavoritism(false);
+    setWorkingFavoritism(false)
   }
 
   async function handleLikeToggle() {
@@ -70,52 +71,52 @@ const Blog = (props) => {
         appendNotification({
           message: "A process is still ongoing...",
           color: "warning",
-        })
-      );
-      return;
+        }),
+      )
+      return
     }
-    setWorkingLike(true);
+    setWorkingLike(true)
     if (blogLikes.includes(userID)) {
       try {
         const updatedBlog = await blogsApi.patch(blogID, {
           likes: blogLikes.filter((like) => like !== userID),
-        });
+        })
         dispatch(
           setBlogs(
-            rest.blogs.map((blog) => (blog.id === blogID ? updatedBlog : blog))
-          )
-        );
+            rest.blogs.map((blog) => (blog.id === blogID ? updatedBlog : blog)),
+          ),
+        )
       } catch (error) {
         dispatch(
           appendNotification({
             message: error.message,
             color: "error",
-          })
-        );
+          }),
+        )
       }
-      setWorkingLike(false);
+      setWorkingLike(false)
     } else {
-      const updatedProps = { likes: [...blogLikes, userID] };
+      const updatedProps = { likes: [...blogLikes, userID] }
       if (blogDislikes.includes(userID))
         updatedProps.dislikes = blogDislikes.filter(
-          (dislike) => dislike !== userID
-        );
+          (dislike) => dislike !== userID,
+        )
       try {
-        const updatedBlog = await blogsApi.patch(blogID, updatedProps);
+        const updatedBlog = await blogsApi.patch(blogID, updatedProps)
         dispatch(
           setBlogs(
-            rest.blogs.map((blog) => (blog.id === blogID ? updatedBlog : blog))
-          )
-        );
+            rest.blogs.map((blog) => (blog.id === blogID ? updatedBlog : blog)),
+          ),
+        )
       } catch (error) {
         dispatch(
           appendNotification({
             message: error.message,
             color: "error",
-          })
-        );
+          }),
+        )
       }
-      setWorkingLike(false);
+      setWorkingLike(false)
     }
   }
 
@@ -125,51 +126,51 @@ const Blog = (props) => {
         appendNotification({
           message: "A process is still ongoing...",
           color: "warning",
-        })
-      );
-      return;
+        }),
+      )
+      return
     }
-    setWorkingDislike(true);
+    setWorkingDislike(true)
     if (blogDislikes.includes(userID)) {
       try {
         const updatedBlog = await blogsApi.patch(blogID, {
-          dislikes: blogDislikes.filter((dislike) => dislike !== user),
-        });
+          dislikes: blogDislikes.filter((dislike) => dislike !== userID),
+        })
         dispatch(
           setBlogs(
-            rest.blogs.map((blog) => (blog.id === blogID ? updatedBlog : blog))
-          )
-        );
+            rest.blogs.map((blog) => (blog.id === blogID ? updatedBlog : blog)),
+          ),
+        )
       } catch (error) {
         dispatch(
           appendNotification({
             message: error.message,
             color: "error",
-          })
-        );
+          }),
+        )
       }
-      setWorkingDislike(false);
+      setWorkingDislike(false)
     } else {
-      const updatedProps = { dislikes: [...blogDislikes, userID] };
+      const updatedProps = { dislikes: [...blogDislikes, userID] }
       if (blogLikes.includes(userID)) {
-        updatedProps.likes = blogLikes.filter((id) => id !== userID);
+        updatedProps.likes = blogLikes.filter((id) => id !== userID)
       }
       try {
-        const updatedBlog = await blogsApi.patch(blogID, updatedProps);
+        const updatedBlog = await blogsApi.patch(blogID, updatedProps)
         dispatch(
           setBlogs(
-            rest.blogs.map((blog) => (blog.id === blogID ? updatedBlog : blog))
-          )
-        );
+            rest.blogs.map((blog) => (blog.id === blogID ? updatedBlog : blog)),
+          ),
+        )
       } catch (error) {
         dispatch(
           appendNotification({
             message: error.message,
             color: "error",
-          })
-        );
+          }),
+        )
       }
-      setWorkingDislike(false);
+      setWorkingDislike(false)
     }
   }
 
@@ -201,7 +202,7 @@ const Blog = (props) => {
       <div className="bg-slate-50 w-full relative my-2 rounded-lg overflow-hidden pb-[calc((3/4)*100%)]">
         <img
           className="absolute top-0 left-0 object-cover object-center w-full h-full"
-          src={rest.blog.thumbnail}
+          src={`/hotcakes/${userID}/${rest.blog.thumbnail}`}
           alt={`thumbnail for blog titled: ${rest.blog.title}`}
         />
       </div>
@@ -225,51 +226,74 @@ const Blog = (props) => {
           {workingFavoritism && <Loader width={22} />}
           {workingFavoritism && <i className="block w-6 aspect-square" />}
         </button>
-        <div className="ml-auto">
-          <button
-            type="button"
-            aria-label={blogLikes.includes(userID) ? "Unlike" : "Like"}
-            aria-disabled={workingLike || workingDislike}
-            onClick={handleLikeToggle}
-            className="relative p-1 rounded-full"
-          >
-            {blogLikes.includes(userID) && !workingLike && (
-              <IconThumbUpFilled className="text-blue-400" />
-            )}
-            {!blogLikes.includes(userID) && !workingLike && (
-              <IconThumbUp className="text-slate-300" />
-            )}
-            {workingLike && <Loader width={22} />}
-            {workingLike && <i className="block w-6 aspect-square" />}
-          </button>
-          <button
-            type="button"
-            aria-label={
-              blogDislikes.includes(userID) ? "Remove dislike" : "Dislike"
-            }
-            aria-disabled={workingLike || workingDislike}
-            onClick={handleDislikeToggle}
-            className="relative p-1 ml-2 rounded-full"
-          >
-            {blogDislikes.includes(userID) && !workingDislike && (
-              <IconThumbDownFilled className="text-red-400" />
-            )}
-            {!blogDislikes.includes(userID) && !workingDislike && (
-              <IconThumbDown className="text-slate-300" />
-            )}
-            {workingDislike && <Loader width={22} />}
-            {workingDislike && <i className="block w-6 aspect-square" />}
-          </button>
+        <div className="flex items-center gap-2 ml-auto">
+          <div className="flex flex-col items-center text-xs leading-none">
+            <button
+              type="button"
+              aria-label={blogLikes.includes(userID) ? "Unlike" : "Like"}
+              aria-disabled={workingLike || workingDislike}
+              onClick={handleLikeToggle}
+              className="relative p-1 rounded-full"
+            >
+              {blogLikes.includes(userID) && !workingLike && (
+                <IconThumbUpFilled className="text-blue-400" />
+              )}
+              {!blogLikes.includes(userID) && !workingLike && (
+                <IconThumbUp className="text-slate-300" />
+              )}
+              {workingLike && <Loader width={22} />}
+              {workingLike && <i className="block w-6 aspect-square" />}
+            </button>
+            <span
+              className={`${
+                blogLikes.length === 0 ? "text-slate-300" : "text-slate-600"
+              }`}
+            >
+              {blogLikes.length}
+            </span>
+          </div>
+          <div className="flex flex-col items-center text-xs leading-none">
+            <button
+              type="button"
+              aria-label={
+                blogDislikes.includes(userID) ? "Remove dislike" : "Dislike"
+              }
+              aria-disabled={workingLike || workingDislike}
+              onClick={handleDislikeToggle}
+              className="relative p-1 rounded-full"
+            >
+              {blogDislikes.includes(userID) && !workingDislike && (
+                <IconThumbDownFilled className="text-red-400" />
+              )}
+              {!blogDislikes.includes(userID) && !workingDislike && (
+                <IconThumbDown className="text-slate-300" />
+              )}
+              {workingDislike && <Loader width={22} />}
+              {workingDislike && <i className="block w-6 aspect-square" />}
+            </button>
+            <span
+              className={`${
+                blogDislikes.length === 0 ? "text-slate-300" : "text-slate-600"
+              }`}
+            >
+              {blogDislikes.length}
+            </span>
+          </div>
         </div>
       </div>
     </article>
-  );
-};
+  )
+}
+
+Blog.propTypes = {
+  user: string.isRequired,
+  userDetails: shape({}).isRequired,
+}
 
 const mapStateToProps = (state) => ({
   user: state.global.user,
   userDetails: state.user,
   blogs: state.home.blogs,
-});
+})
 
-export default connect(mapStateToProps)(Blog);
+export default connect(mapStateToProps)(Blog)

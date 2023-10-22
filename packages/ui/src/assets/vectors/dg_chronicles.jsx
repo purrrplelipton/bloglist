@@ -1,6 +1,7 @@
-import { number } from "prop-types";
+import { number } from "prop-types"
+import React from "react"
 
-const DG_Chronicles = ({ width }) => (
+const DG_CHRONICLES = ({ width }) => (
   <svg
     version="1.1"
     id="Uploaded to svgrepo.com"
@@ -38,12 +39,12 @@ const DG_Chronicles = ({ width }) => (
       </g>
     </g>
   </svg>
-);
+)
 
-DG_Chronicles.defaultProps = {
+DG_CHRONICLES.defaultProps = {
   width: 32,
-};
+}
 
-DG_Chronicles.propTypes = { width: number };
+DG_CHRONICLES.propTypes = { width: number }
 
-export default DG_Chronicles;
+export default DG_CHRONICLES

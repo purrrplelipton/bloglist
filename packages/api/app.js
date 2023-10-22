@@ -34,7 +34,7 @@ mongoose.set("runValidators", true);
 const app = express();
 
 app.use(cors());
-app.use(express.static("dist"));
+app.use(express.static("build"));
 app.use("/hotcakes", express.static("hotcakes"));
 app.use(express.json({ limit: "16MB" }));
 app.use(express.urlencoded({ extended: false }));

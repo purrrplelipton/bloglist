@@ -1,44 +1,44 @@
-import { IconEye, IconEyeOff } from "@tabler/icons-react";
-import Loader from "components/loader";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { verify } from "services/auth";
-import { appendNotification, setUser } from "store/reducers/global";
+import { IconEye, IconEyeOff } from "@tabler/icons-react"
+import Loader from "components/loader"
+import React, { useState } from "react"
+import { useDispatch } from "react-redux"
+import { Link, useNavigate } from "react-router-dom"
+import { verify } from "services/auth"
+import { appendNotification, setUser } from "store/reducers/global"
 
 const SignIn = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [verifying, setVerifying] = useState(false);
-  const [passwordVisible, setPasswordVisibility] = useState(false);
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const [verifying, setVerifying] = useState(false)
+  const [passwordVisible, setPasswordVisibility] = useState(false)
 
   async function verifyDetails(e) {
-    e.preventDefault();
-    setVerifying(true);
+    e.preventDefault()
+    setVerifying(true)
     try {
       const id = await verify({
         email$alias: e.target.username.value,
         password: e.target.password.value,
         rememberMe: e.target.retain.checked,
-      });
-      dispatch(setUser(id));
+      })
+      dispatch(setUser(id))
       dispatch(
         appendNotification({
           message: "Sign in successful",
           color: "success",
-        })
-      );
-      setPasswordVisibility(false);
-      navigate("/", { replace: true });
+        }),
+      )
+      setPasswordVisibility(false)
+      navigate("/", { replace: true })
     } catch (error) {
       dispatch(
         appendNotification({
           message: error.message,
           color: "error",
-        })
-      );
+        }),
+      )
     }
-    setVerifying(false);
+    setVerifying(false)
   }
 
   return (
@@ -110,7 +110,7 @@ const SignIn = () => {
         </Link>
       </p>
     </div>
-  );
-};
+  )
+}
 
-export default SignIn;
+export default SignIn
